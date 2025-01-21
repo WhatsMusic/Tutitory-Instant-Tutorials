@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Projektname: Dynamische Tutorial-Plattform
 
-## Getting Started
+## Projektbeschreibung
+Dieses Projekt ist eine **dynamische Tutorial-Plattform**, die auf **Next.js** basiert und die API-Integration von **Hugging Face** verwendet, um benutzerdefinierte Inhalte zu generieren. Ziel ist es, interaktive und personalisierte Tutorials für verschiedene Themen zu erstellen.
 
-First, run the development server:
+## Hauptfunktionen
+- **Benutzerdefinierte Tutorial-Generierung**: Der Benutzer gibt ein Thema ein, und das System generiert automatisch ein strukturiertes Tutorial, einschließlich spezifischer Kapitel und Inhalte.
+- **Streaming-Inhalte**: Inhalte werden dynamisch gestreamt und angezeigt, um eine flüssige Benutzererfahrung zu gewährleisten.
+- **Kapitelbasierte Navigation**: Jedes Tutorial ist in Kapitel unterteilt, die einzeln geladen und angezeigt werden können.
+- **Integration von KI-Modellen**: Verwendet die Hugging Face API, um hochwertige, AI-generierte Texte zu erstellen.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Technologie-Stack
+- **Frontend**: Next.js, React, React Markdown
+- **Backend**: API-Routen in Next.js, integriert mit Hugging Face Inference API
+- **Styling**: Tailwind CSS
+- **Deployment**: Optimiert für Vercel
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## So funktioniert es
+1. Der Benutzer gibt ein Thema in das Eingabefeld ein.
+2. Das System generiert dynamisch ein Tutorial mit spezifischen Kapiteln.
+3. Der Benutzer kann Kapitel einzeln laden und Inhalte ansehen.
+4. Streaming-Inhalte sorgen für nahtlose Benutzerinteraktionen.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Einsatzmöglichkeiten
+- **Bildung**: Interaktive Lernressourcen für Schüler und Lehrer.
+- **Marketing**: Automatisierte Inhalte für Workshops oder Kundenpräsentationen.
+- **Unternehmen**: Schulungsmaterialien oder Produktdokumentationen.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Entwicklung und Betrieb
+### Voraussetzungen
+- Node.js (>= 16.x)
+- Hugging Face API-Schlüssel
 
-## Learn More
+### Installation
+1. Repository klonen:
+   ```bash
+   git clone <repository-url>
+   cd <repository-folder>
+   ```
+2. Abhängigkeiten installieren:
+   ```bash
+   npm install
+   ```
+3. `.env` Datei erstellen und die Umgebungsvariablen konfigurieren:
+   ```env
+   HUGGINGFACE_API_KEY=dein_api_schlüssel
+   ```
+4. Entwicklungsserver starten:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+### Deployment
+Dieses Projekt ist optimiert für die Bereitstellung auf Vercel:
+- Pushen Sie den Code auf ein mit Vercel verknüpftes Repository.
+- Konfigurieren Sie die Umgebungsvariablen im Vercel-Dashboard.
+- Deployment wird automatisch durchgeführt.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Lizenz
+Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Mitwirkende
+- **Projektleitung**: [Dein Name]
+- **Entwicklungsteam**: [Teammitglieder]
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Vielen Dank für Ihr Interesse an unserem Projekt! Feedback und Beiträge sind willkommen.
