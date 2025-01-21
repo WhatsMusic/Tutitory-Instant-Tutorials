@@ -20,7 +20,26 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
     }
   }, [tutorial.content]);
 
+  // Neuer Code für Caching-Funktionen
+  const saveToCache = (key: string, data: unknown) => {
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+
+  const loadFromCache = (key: string) => {
+    const cachedData = localStorage.getItem(key);
+    return cachedData ? JSON.parse(cachedData) : null;
+  };
+
+  // Anpassen der Funktion handleGenerateChapter
   const handleGenerateChapter = async (chapterTitle: string) => {
+    const cacheKey = `${tutorial.title}-${chapterTitle}`;
+    const cachedChapter = loadFromCache(cacheKey);
+
+    if (cachedChapter) {
+      setActiveChapter(cachedChapter);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/generate-tutorial", {
@@ -37,6 +56,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
 
       const data: Chapter = await res.json();
       setActiveChapter(data);
+      saveToCache(cacheKey, data); // Kapitel im Cache speichern
     } catch (error) {
       console.error("Fehler beim Laden des Kapitels:", error);
     } finally {
@@ -44,9 +64,10 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
     }
   };
 
- if (!chapters || chapters.length === 0) {
+
+  if (!chapters || chapters.length === 0) {
     return <p className="text-gray-500">Keine Kapitel verfügbar.</p>;
-}
+  }
 
 
   return (
@@ -70,17 +91,17 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         </div>
       ) : (
         <ul className="list-inside list-decimal">
-    {chapters.map((chapter, index) => (
-        <li key={index} className="mb-4">
-            <button
+          {chapters.map((chapter, index) => (
+            <li key={index} className="mb-4">
+              <button
                 onClick={() => handleGenerateChapter(chapter.title)}
                 className="text-blue-500 underline hover:text-blue-700"
-            >
+              >
                 {chapter.title}
-            </button>
-        </li>
-    ))}
-</ul>
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
 
       {loading && <p className="text-blue-500 mt-4">Das Kapitel wird geladen...</p>}

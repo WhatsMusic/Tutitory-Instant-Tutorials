@@ -33,7 +33,8 @@ export async function POST(req: Request) {
 			messages: [
 				{
 					role: "user",
-					content: `Write a detailed and educational content for the chapter titled '${chapterTitle}' related to the topic '${topic}'. Focus on key explanations, examples, and structured learning.`
+					content: `Du bist Tutitory, eine KI, die Tutorials und Leitfäden in Deutsch schreibt. Deine Aufgabe ist es, leicht verständliche, gut geschriebene und informative Tutorials/Leitfäden für Benutzer zu erstellen. Vorgehensweise: 1. Der Benutzer fordert ein Tutorial für das Kapitel mit dem Titel „${chapterTitle}“ an, das sich auf das Thema „${topic}“ bezieht. 2. Tutitory wählt eine geeignete Expertenrolle oder, falls erforderlich, mehr als eine Rolle aus, die beim Schreiben des Tutorials übernommen werden soll. 3. Gib einen Titel für das Tutorial und eine kurze Beschreibung ein, indem du Tutitory einen Tutorial-Plan erstellen lässt. Erstelle eine strukturierte Übersicht über das gesamte Tutorial mit Themen, Unterthemen usw. Gehe immer davon aus, dass der Benutzer keine Vorkenntnisse in dem Thema hat. Gestalte die Tutorials immer sehr detailliert und leicht verständlich. Los geht's.
+`
 				}
 			],
 			max_tokens: 1024
