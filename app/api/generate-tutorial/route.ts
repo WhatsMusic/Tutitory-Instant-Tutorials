@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { HfInference } from "@huggingface/inference";
-const client = new HfInference(process.env.HUGGINGFACE_API_KEY!);
+
+const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(req: Request) {
 	const body = await req.json();
@@ -27,40 +28,53 @@ export async function POST(req: Request) {
 	}
 
 	try {
-		let content = "";
-
-		const stream = client.chatCompletionStream({
-			model: "meta-llama/Llama-3.2-1B-Instruct",
+		const chatCompletion = await client.chatCompletion({
+			model: "google/gemma-2-2b-it",
 			messages: [
 				{
-					role: "system",
-					content: `You are Tutitory, an AI that writes tutorials and guides. Your job is to create easy-to-understand, well-written and informative tutorials/guides for users. How to proceed: 1. The user requests a tutorial for the chapter titled “${chapterTitle}” that relates to the topic “${topic}”. 2. Tutitory selects an appropriate expert role or, if necessary, more than one role to adopt when writing the tutorial. 3. Enter a title for the tutorial and a short description by letting Tutitory create a tutorial plan. Provide a structured overview of the entire tutorial with topics, subtopics, etc. Always assume that the user has no prior knowledge of the subject. Always make the tutorials very detailed and easy to understand. Let's get started.`
-				},
-				{ role: "user", content: topic }
+					role: "user",
+					content: `Write a detailed and educational content for the chapter titled '${chapterTitle}' related to the topic '${topic}'. Focus on key explanations, examples, and structured learning.`
+				}
 			],
-			temperature: 0.5,
-			max_tokens: 2048,
-			top_p: 0.7
+			max_tokens: 1024
 		});
 
-		for await (const chunk of stream) {
-			if (chunk.choices && chunk.choices.length > 0) {
-				const newContent = chunk.choices[0].delta.content;
-				content += newContent;
-				console.log("Empfangenes Chunk:", newContent);
-			}
+		console.log("HuggingFace API-Ergebnis:", chatCompletion);
+
+		if (
+			!chatCompletion ||
+			!chatCompletion.choices ||
+			!chatCompletion.choices[0] ||
+			!chatCompletion.choices[0].message ||
+			!chatCompletion.choices[0].message.content
+		) {
+			throw new Error(
+				`Unerwartete Antwortstruktur von der HuggingFace-API: ${JSON.stringify(
+					chatCompletion
+				)}`
+			);
 		}
 
-		// Antwort mit vollständigem generiertem Inhalt zurückgeben
-		return NextResponse.json({
-			title: chapterTitle,
-			content: content.split("\n").filter((line) => line.trim())
-		});
-	} catch (error) {
-		console.error("Fehler beim Streaming:", error);
+		const result = chatCompletion.choices[0].message.content;
 		return NextResponse.json(
 			{
-				error: `Fehler bei der Generierung des Kapitels '${chapterTitle}'.`
+				title: chapterTitle,
+				content: result.split("\n").filter((line) => line.trim()) // Text in ein Array aufteilen
+			},
+			{
+				headers: { "Content-Type": "application/json" },
+				status: 200
+			}
+		);
+	} catch (error) {
+		console.error(
+			`Fehler bei der Generierung des Inhalts für '${chapterTitle}':`,
+			error
+		);
+
+		return NextResponse.json(
+			{
+				error: `Fehler bei der Generierung des Inhalts für '${chapterTitle}'.`
 			},
 			{ status: 500 }
 		);

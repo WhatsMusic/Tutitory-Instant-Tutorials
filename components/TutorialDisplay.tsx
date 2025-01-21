@@ -9,31 +9,19 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null);
   const [loading, setLoading] = useState(false);
 
-
-
-
   // Extrahiere Kapitel beim ersten Rendern
   useEffect(() => {
-
     if (Array.isArray(tutorial.content)) {
       const extractedChapters = extractChapters(tutorial.content);
       setChapters(extractedChapters);
     } else {
-      console.error("Ungültiger Content:", tutorial.content);
-      setChapters([]);
+      console.warn("Tutorial content is not an array:", tutorial.content);
+      setChapters([]); // Set chapters to an empty array if content is not valid
     }
   }, [tutorial.content]);
 
-  if (!tutorial || !Array.isArray(tutorial.content)) {
-    console.error("Ungültiges Tutorial-Objekt:", tutorial);
-    return <p className="text-gray-500">Kein gültiges Tutorial verfügbar.</p>;
-  }
-
-
   const handleGenerateChapter = async (chapterTitle: string) => {
     setLoading(true);
-    let generatedContent = "";
-
     try {
       const res = await fetch("/api/generate-tutorial", {
         method: "POST",
@@ -43,29 +31,23 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         body: JSON.stringify({ topic: tutorial.title, chapterTitle }),
       });
 
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder("utf-8");
-
-      while (reader) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        generatedContent += decoder.decode(value, { stream: true });
-        setActiveChapter({
-          title: chapterTitle,
-          content: generatedContent.split("\n").filter((line) => line.trim()),
-        });
+      if (!res.ok) {
+        throw new Error(`Fehler beim Abrufen des Kapitels: ${res.statusText}`);
       }
+
+      const data: Chapter = await res.json();
+      setActiveChapter(data);
     } catch (error) {
-      console.error("Fehler beim Abrufen des Kapitels:", error);
+      console.error("Fehler beim Laden des Kapitels:", error);
     } finally {
       setLoading(false);
     }
   };
 
+ if (!chapters || chapters.length === 0) {
+    return <p className="text-gray-500">Keine Kapitel verfügbar.</p>;
+}
 
-  if (!chapters || chapters.length === 0) {
-    return <p className="text-gray-500">Keine Inhalte verfügbar.</p>;
-  }
 
   return (
     <div className="max-h-screen w-full max-w-md bg-white p-6 rounded-lg shadow-md overflow-y-auto">
@@ -88,17 +70,17 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         </div>
       ) : (
         <ul className="list-inside list-decimal">
-          {chapters.map((chapter, index) => (
-            <li key={index} className="mb-4">
-              <button
+    {chapters.map((chapter, index) => (
+        <li key={index} className="mb-4">
+            <button
                 onClick={() => handleGenerateChapter(chapter.title)}
                 className="text-blue-500 underline hover:text-blue-700"
-              >
+            >
                 {chapter.title}
-              </button>
-            </li>
-          ))}
-        </ul>
+            </button>
+        </li>
+    ))}
+</ul>
       )}
 
       {loading && <p className="text-blue-500 mt-4">Das Kapitel wird geladen...</p>}
@@ -106,40 +88,25 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   );
 }
 
+// Funktion zur Kapitel-Extraktion
 function extractChapters(content: string[]): Chapter[] {
-  if (!Array.isArray(content)) {
-    console.error("Content ist kein Array:", content);
-    return [];
-  }
-
   const chapters: Chapter[] = [];
   let currentChapter: Chapter | null = null;
 
-  content.forEach((line: string) => {
-    // Filter: Überspringe irrelevante Zeilen
-    if (
-      line.includes("Generate content for the chapter titled") ||
-      line.includes("The final answer is")
-    ) {
-      return; // Überspringe die Zeile
-    }
-
-    // Prüfe auf Kapitelstart
+  content.forEach((line) => {
     if (line.startsWith("**")) {
       if (currentChapter) {
         chapters.push(currentChapter);
       }
-      currentChapter = { title: line.replace(/\*\*/g, "").trim(), content: [] };
+      currentChapter = { title: line.replace(/\*\*/g, ""), content: [] };
     } else if (currentChapter) {
-      currentChapter.content.push(line.trim());
+      currentChapter.content.push(line);
     }
   });
 
-  // Letztes Kapitel hinzufügen
   if (currentChapter) {
     chapters.push(currentChapter);
   }
 
   return chapters;
 }
-

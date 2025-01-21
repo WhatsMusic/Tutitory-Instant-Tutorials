@@ -31,17 +31,31 @@ export default function TutorialForm({
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ topic, chapterTitle: topic }), // Beispielwert
+                body: JSON.stringify({ topic, chapterTitle: topic }),
             });
+
+            console.log("Serverantwort:", res);
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Fehlerdetails:", errorText);
+                throw new Error(`Fehler: ${res.statusText}`);
+            }
 
             const data = await res.json();
             setTutorialPlan(data);
         } catch (error) {
-            console.error("Fehler beim Generieren des Plans:", error);
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("Ein unbekannter Fehler ist aufgetreten.");
+            }
         } finally {
             setLoading(false);
         }
     };
+
+
 
 
 
