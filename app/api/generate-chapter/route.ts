@@ -8,6 +8,8 @@ export async function POST(req: Request) {
 	const body = await req.json(); // Parses the request body as JSON.
 	const { topic, chapterTitle } = body; // Destructures topic and chapterTitle from the request body.
 
+	console.log("Received request:", body); // Logs the received request body for debugging.
+
 	if (
 		// Validates that both topic and chapterTitle are provided and not empty.
 		!topic ||
@@ -38,7 +40,9 @@ export async function POST(req: Request) {
 					content: `Erstelle ein Kapitel mit dem Titel „${chapterTitle}“, das zum Thema „${topic}“ gehört.`
 				}
 			],
-			max_tokens: 1024 // Limits the number of tokens in the response.
+			temperature: 0.3,
+			max_tokens: 2048,
+			top_p: 0.7
 		});
 
 		if (

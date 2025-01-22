@@ -48,6 +48,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
       const data: Chapter = JSON.parse(responseBody); // Parses the response body as a Chapter object.
       setActiveChapter(data); // Sets the active chapter with the fetched data.
       localStorage.setItem(cacheKey, JSON.stringify(data)); // Caches the chapter data in local storage.
+      console.log(JSON.stringify(data));
     } catch (error) { // Catches and handles any errors during the fetch or parsing process.
       console.error("Error fetching or parsing data:", error);
       alert(error instanceof Error ? error.message : "Unknown error.");
@@ -59,24 +60,38 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
   return (
     <div className="max-w-full mx-auto bg-white p-4 mt-5 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">{tutorial.title}</h2>
+
       {!activeChapter ? (
         <div>
-          <h3 className="text-xl font-semibold mb-4">Übersicht</h3>
+          <div>
+            {chapters.length > 0 ? (
+              <div className="text-lg font-400 mb-4">
+                <ReactMarkdown className="text-gray-800 text-sm sm:text-base md:text-lg leading-relaxed">
+                  {chapters[0].title || "Keine Beschreibung verfügbar."}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <p>Keine Kapitel verfügbar.</p>
+            )}
+          </div>
+          <h3 className="text-xl font-semibold mb-4">Kapitelübersicht</h3>
           {loading ? ( // Zeige Ladezustand an, wenn Kapitel geladen wird
             <p className="text-blue-500 text-center">Kapitel wird geladen...</p>
           ) : (
             <ul className="space-y-2l text-left">
               {chapters.length > 0 ? (
-                chapters.map((chapter, index) => (
-                  <li key={index}>
-                    <button
-                      onClick={() => handleGenerateChapter(chapter.title)} // Sets the chapter as active when clicked.
-                      className="text-blue-500 hover:text-gray-800 focus:outline-none text-left"
-                    >
-                      {chapter.title}
-                    </button>
-                  </li>
-                ))
+                chapters
+                  .filter((chapter) => !chapter.title.startsWith("Beschreibung") && !chapter.title.startsWith("Tutorialplan")) // Exclude chapters with "Beschreibung" in the title
+                  .map((chapter, index) => (
+                    <li key={index}>
+                      <button
+                        onClick={() => handleGenerateChapter(chapter.title)} // Sets the chapter as active when clicked.
+                        className="text-blue-500 hover:text-gray-800 focus:outline-none text-left"
+                      >
+                        {chapter.title}
+                      </button>
+                    </li>
+                  ))
               ) : (
                 <p>Keine Kapitel verfügbar.</p>
               )}
@@ -85,9 +100,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
         </div>
       ) : (
         <div className="prose prose-blue max-w-full px-2 py-4 sm:px-2 sm:py-6 bg-white rounded-lg shadow-md text-left">
-          <h3 className="text-xl text-left font-semibold mb-4 p-2 sm:text-lg md:text-xl">
-            {activeChapter.title}
-          </h3>
+
           <ReactMarkdown className="text-gray-800 text-sm sm:text-base md:text-lg leading-relaxed">
             {activeChapter.content.join("\n\n")}
           </ReactMarkdown>
@@ -102,16 +115,17 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
     </div>
   );
 
-
-
-
-
   function extractChapters(content: string[]): Chapter[] { // Function to extract chapters from the content.
     const chapters: Chapter[] = []; // Array to store extracted chapters.
     let currentChapter: Chapter | null = null; // Variable to track the current chapter being processed.
 
     content.forEach((line) => { // Iterates over each line of content.
       const trimmedLine = line.trim(); // Trims whitespace from the line.
+
+      // Detect and ignore non-chapter sections like "Tutorialplan"
+      if (["Tutorialplan", "Expertenrolle", "Zielgruppe"].some(prefix => trimmedLine.startsWith(prefix))) {
+        return;
+      }
 
       // Detects a new chapter by a Markdown heading
       if (trimmedLine.startsWith("**")) { // Checks if the line starts with Markdown-style bold, indicating a chapter title.

@@ -35,10 +35,18 @@ export async function POST(req: Request) {
 			messages: [
 				{
 					role: "user",
-					content: `Du bist Tutitory, eine KI, die deutsche Tutorials und Anleitungen auf Deutsch schreibt. Deine Aufgabe ist es, leicht verständliche, gut geschriebene und informative Tutorials/Anleitungen für Benutzer zu erstellen. Erstelle ein Kapitel mit dem Titel „${chapterTitle}“, das zum Thema „${topic}“ gehört.`
+					content: `Du bist Tutitory, eine KI, die Tutorials und Anleitungen schreibt.
+							Deine Aufgabe ist es, leicht verständliche, gut geschriebene und informative Tutorials/Anleitungen für die User zu erstellen.
+							Vorgehensweise:
+							1. Der User benötigt ein Tutorial zum Thema ${topic}.
+							2. Tutitory wählt eine passende Expertenrolle oder ggf. mehr als eine Rolle, die es für das Schreiben des Tutorials annimmt.
+							3. Gib einen Titel für das Tutorial und eine kurze Beschreibung an, indem Tutitory einen Tutorialplan erstellt. Gib einen strukturierten Überblick über das gesamte Tutorial mit Themen, Unterthemen usw.
+							4. Tutitory führt den User Schritt für Schritt durch den gesamten Lehrgang. Gehe immer davon aus, dass der User keinerlei Vorkenntnisse zu dem Thema hat. Gestalte die Tutorials immer sehr detailliert und einfach zu folgen.`
 				}
 			],
-			max_tokens: 1024 // Limits the number of tokens in the response.
+			temperature: 0.3,
+			max_tokens: 2048,
+			top_p: 0.7
 		});
 
 		if (
