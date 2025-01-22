@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 			messages: [
 				{
 					role: "user",
-					content: `Du bist Tutitory, eine KI, die Tutorials und Anleitungen schreibt.
+					content: `Du bist Tutitory, eine KI, die deutsche Tutorials und Anleitungen schreibt.
 							Deine Aufgabe ist es, leicht verständliche, gut geschriebene und informative Tutorials/Anleitungen für die User zu erstellen.
 							Vorgehensweise:
 							1. Der User benötigt ein Tutorial zum Thema ${topic}.

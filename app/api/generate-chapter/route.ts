@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 			messages: [
 				{
 					role: "user",
-					content: `Erstelle ein Kapitel mit dem Titel „${chapterTitle}“, das zum Thema „${topic}“ gehört.`
+					content: `Erstelle in Deutsch ein Kapitel mit dem Titel „${chapterTitle}“, das zum Thema „${topic}“ gehört.`
 				}
 			],
 			temperature: 0.3,
