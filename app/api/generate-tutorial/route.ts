@@ -58,8 +58,9 @@ export async function POST(req: Request) {
 				title: chapterTitle,
 				content: result
 					.split("\n")
-					.map((line) => line.trim())
-					.filter((line) => line)
+					.map((line) => line.trim()) // Zeilen trimmen
+					// Entferne nur `null` oder `undefined`, behalte aber leere Strings
+					.filter((line) => line !== null && line !== undefined)
 			},
 			{ status: 200 }
 		);

@@ -3,17 +3,17 @@
 import { useState, useEffect } from "react";
 import { Tutorial, Chapter } from "../types";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null);
   const [loading, setLoading] = useState(false);
 
-
   useEffect(() => {
     if (Array.isArray(tutorial.content)) {
-      setChapters(extractChapters(tutorial.content));
+      const extractedChapters = extractChapters(tutorial.content);
+      console.log("Extrahierte Kapitel:", extractedChapters); // Debug-Ausgabe
+      setChapters(extractedChapters);
     }
   }, [tutorial.content]);
 
@@ -38,44 +38,23 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         body: JSON.stringify({ topic: tutorial.title.trim(), chapterTitle: chapterTitle.trim() }),
       });
 
-      // Logge die vollständige Antwort
-      console.log("API-Antwort:", res);
-
-      // Überprüfe, ob die Antwort erfolgreich ist
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Fehlertext:", errorText);
         throw new Error(`API-Fehler: ${res.status} ${res.statusText}`);
       }
 
-      // Logge den Antworttext
-
-      try {
-        const responseBody = await res.text();
-        try {
-          const data: Chapter = JSON.parse(responseBody);
-          setActiveChapter(data);
-          localStorage.setItem(cacheKey, JSON.stringify(data));
-        } catch (jsonError) {
-          console.error("Fehler beim Parsen von JSON:", responseBody, jsonError);
-          throw new Error("Ungültige JSON-Antwort von der API.");
-        }
-      } catch (error) {
-        console.error("Fehler beim Abrufen oder Parsen der Daten:", error);
-        alert(error instanceof Error ? error.message : "Unbekannter Fehler.");
-      }
-
-
+      const responseBody = await res.text();
+      const data: Chapter = JSON.parse(responseBody);
+      setActiveChapter(data);
+      localStorage.setItem(cacheKey, JSON.stringify(data));
     } catch (error) {
       console.error("Fehler beim Abrufen oder Parsen der Daten:", error);
       alert(error instanceof Error ? error.message : "Unbekannter Fehler.");
     } finally {
       setLoading(false);
     }
-
-  }
-
-
+  };
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 mt-5 rounded-lg shadow-md">
@@ -84,27 +63,26 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         <div>
           <h3 className="text-xl font-semibold mb-4">Kapitelübersicht</h3>
           <ul className="space-y-2 list-inside list-decimal">
-            {chapters.map((chapter) => (
-              <li key={chapter.title}>
-                <button
-                  onClick={() => handleGenerateChapter(chapter.title)}
-                  className="text-blue-500 underline hover:text-blue-700 focus:outline-none"
-                >
-                  {chapter.title}
-                </button>
-              </li>
-            ))}
+            {chapters.length > 0 ? (
+              chapters.map((chapter, index) => (
+                <li key={index}>
+                  <button
+                    onClick={() => handleGenerateChapter(chapter.title)}
+                    className="text-blue-500 underline hover:text-blue-700 focus:outline-none"
+                  >
+                    {chapter.title}
+                  </button>
+                </li>
+              ))
+            ) : (
+              <p>Keine Kapitel verfügbar.</p>
+            )}
           </ul>
         </div>
       ) : (
-        <div>
+        <div className="prose prose-blue">
           <h3 className="text-xl font-semibold mb-4">{activeChapter.title}</h3>
-          <div className="prose prose-blue">
-            {/* Markdown wird hier gerendert */}
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {activeChapter.content.join("\n")}
-            </ReactMarkdown>
-          </div>
+          <ReactMarkdown>{activeChapter.content.join("\n\n")}</ReactMarkdown>
           <button
             onClick={() => setActiveChapter(null)}
             className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none"
@@ -123,13 +101,16 @@ function extractChapters(content: string[]): Chapter[] {
   let currentChapter: Chapter | null = null;
 
   content.forEach((line) => {
-    if (line.startsWith("**")) {
+    const trimmedLine = line.trim();
+
+    // Neues Kapitel bei einer Markdown-Überschrift erkennen
+    if (trimmedLine.startsWith("**")) {
       if (currentChapter) {
         chapters.push(currentChapter);
       }
-      currentChapter = { title: line.replace(/\*\*/g, ""), content: [] };
+      currentChapter = { title: trimmedLine.replace(/\*\*/g, ""), content: [] };
     } else if (currentChapter) {
-      currentChapter.content.push(line);
+      currentChapter.content.push(trimmedLine || "\n");
     }
   });
 
@@ -138,5 +119,4 @@ function extractChapters(content: string[]): Chapter[] {
   }
 
   return chapters;
-
 }
