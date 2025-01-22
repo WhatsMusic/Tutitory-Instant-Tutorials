@@ -57,7 +57,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 mt-5 rounded-lg shadow-md">
+    <div className="max-w-full mx-auto bg-white p-4 mt-5 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">{tutorial.title}</h2>
       {!activeChapter ? (
         <div>
@@ -65,27 +65,27 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
           {loading ? ( // Zeige Ladezustand an, wenn Kapitel geladen wird
             <p className="text-blue-500 text-center">Kapitel wird geladen...</p>
           ) : (
-            <ul className="space-y-2 list-inside list-decimal">
+            <ul className="space-y-2l text-left">
               {chapters.length > 0 ? (
                 chapters.map((chapter, index) => (
                   <li key={index}>
                     <button
                       onClick={() => handleGenerateChapter(chapter.title)} // Sets the chapter as active when clicked.
-                      className="text-blue-500 underline hover:text-blue-700 focus:outline-none"
+                      className="text-blue-500 hover:text-gray-800 focus:outline-none text-left"
                     >
                       {chapter.title}
                     </button>
                   </li>
                 ))
               ) : (
-                <p>No chapters available.</p>
+                <p>Keine Kapitel verfügbar.</p>
               )}
             </ul>
           )}
         </div>
       ) : (
-        <div className="prose prose-blue max-w-full px-4 py-4 sm:px-6 sm:py-6 bg-white rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold mb-4 text-center sm:text-2xl md:text-3xl">
+        <div className="prose prose-blue max-w-full px-2 py-4 sm:px-2 sm:py-6 bg-white rounded-lg shadow-md text-left">
+          <h3 className="text-xl text-left font-semibold mb-4 p-2 sm:text-lg md:text-xl">
             {activeChapter.title}
           </h3>
           <ReactMarkdown className="text-gray-800 text-sm sm:text-base md:text-lg leading-relaxed">

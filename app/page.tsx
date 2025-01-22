@@ -17,7 +17,7 @@ export default function Home() { // Defines the main component of the page.
   }, [tutorialPlan]); // Dependency array for the useEffect hook, triggers when tutorialPlan changes.
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 flex flex-col items-center justify-center px-2 py-6 sm:px-2 lg:px-2">
       {/* Container div with styling for the entire page, including background gradient and centered alignment */}
       <h2
         className="text-4xl font-extrabold text-gray-800 mb-6"

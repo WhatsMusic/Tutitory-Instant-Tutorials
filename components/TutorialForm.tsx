@@ -51,7 +51,7 @@ export default function TutorialForm({ setTutorialPlan }: { setTutorialPlan: (pl
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+    <div className="w-full max-w-full bg-white p-2 rounded-lg shadow-md">
       {/* Container div with styling for the form, including background, padding, and shadow */}
       <input
         ref={inputRef} // Associates the input element with the inputRef reference.
