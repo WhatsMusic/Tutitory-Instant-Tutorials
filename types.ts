@@ -1,72 +1,86 @@
 export interface Tutorial {
-	content: unknown;
-	error: unknown;
-	title: string;
-	description: string;
-	chapters: Chapter[];
+	// Defines the Tutorial interface for TypeScript type checking.
+	content: unknown; // Placeholder for content, type is unknown.
+	error: unknown; // Placeholder for error, type is unknown.
+	title: string; // Title of the tutorial.
+	description: string; // Description of the tutorial.
+	chapters: Chapter[]; // Array of chapters in the tutorial.
 }
 
 export interface Chapter {
-	title: string;
-	content: string[];
+	// Defines the Chapter interface for TypeScript type checking.
+	title: string; // Title of the chapter.
+	content: string[]; // Array of strings representing the content of the chapter.
 }
 
 function createErrorResponse(message: string, status: number = 500) {
+	// Function to create an error response.
 	return new Response(JSON.stringify({ error: message }), {
-		status,
-		headers: { "Content-Type": "application/json" }
+		// Returns a new Response object with a JSON error message.
+		status, // Sets the HTTP status code.
+		headers: { "Content-Type": "application/json" } // Sets the content type to JSON.
 	});
 }
 
 export async function POST(req: Request) {
+	// Defines an asynchronous POST function to handle HTTP POST requests.
 	try {
-		const body = await req.json();
-		const { topic } = body;
+		const body = await req.json(); // Parses the request body as JSON.
+		const { topic } = body; // Destructures the topic from the request body.
 
 		if (!topic || topic.trim().length === 0) {
-			return createErrorResponse("Kein gültiges Thema angegeben.", 400);
+			// Validates that a valid topic is provided.
+			return createErrorResponse("No valid topic provided.", 400); // Returns a 400 error response if the topic is invalid.
 		}
 
-		// Dynamische Beispielantwort
+		// Dynamic example response
 		const tutorialResponse: Tutorial = {
-			title: `Tutorial: ${topic}`,
-			description: `Eine ausführliche Einführung in das Thema "${topic}".`,
+			// Creates a tutorial response object conforming to the Tutorial interface.
+			title: `Tutorial: ${topic}`, // Sets the tutorial title.
+			description: `A comprehensive introduction to the topic "${topic}".`, // Sets the tutorial description.
 			chapters: [
+				// Defines an array of chapters for the tutorial.
 				{
-					title: "Einleitung",
+					title: "Introduction", // Title of the first chapter.
 					content: [
-						`Was ist ${topic}?`,
-						`Warum ist ${topic} wichtig?`
+						// Content of the first chapter.
+						`What is ${topic}?`,
+						`Why is ${topic} important?`
 					]
 				},
 				{
-					title: "Hauptteil",
+					title: "Main Content", // Title of the second chapter.
 					content: [
-						`Die zentralen Aspekte von ${topic}.`,
-						`Praktische Beispiele und Anwendungen.`
+						// Content of the second chapter.
+						`The key aspects of ${topic}.`,
+						`Practical examples and applications.`
 					]
 				},
 				{
-					title: "Fazit",
+					title: "Conclusion", // Title of the third chapter.
 					content: [
-						`Zusammenfassung der wichtigsten Punkte zu ${topic}.`,
-						`Empfehlungen für weiterführende Ressourcen zu ${topic}.`
+						// Content of the third chapter.
+						`Summary of the key points about ${topic}.`,
+						`Recommendations for further resources on ${topic}.`
 					]
 				}
 			],
-			error: undefined,
-			content: undefined
+			error: undefined, // Placeholder for error, set to undefined.
+			content: undefined // Placeholder for content, set to undefined.
 		};
 
 		return new Response(JSON.stringify(tutorialResponse), {
-			status: 200,
-			headers: { "Content-Type": "application/json" }
+			// Returns a new Response object with the tutorial data as JSON.
+			status: 200, // Sets the HTTP status code to 200 (OK).
+			headers: { "Content-Type": "application/json" } // Sets the content type to JSON.
 		});
 	} catch (error) {
+		// Catches and handles any errors during the process.
 		console.error(
-			"Fehler bei der Generierung des Tutorials:",
+			// Logs the error to the console.
+			"Error generating the tutorial:",
 			error instanceof Error ? error.message : error
 		);
-		return createErrorResponse("Fehler bei der Generierung des Tutorials.");
+		return createErrorResponse("Error generating the tutorial."); // Returns a generic error response.
 	}
 }
