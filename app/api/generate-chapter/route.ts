@@ -7,13 +7,11 @@ export async function POST(req: Request) {
 	const body = await req.json();
 	const { topic, chapterTitle } = body;
 
-	console.log("Empfangene Anfrage:", body);
-
 	if (
 		!topic ||
 		!chapterTitle ||
-		topic.trim().length === 0 ||
-		chapterTitle.trim().length === 0
+		topic.trim() === "" ||
+		chapterTitle.trim() === ""
 	) {
 		console.log("Ungültige Eingabe:", { topic, chapterTitle });
 		return NextResponse.json(
@@ -26,32 +24,38 @@ export async function POST(req: Request) {
 	}
 
 	try {
+		console.log("Eingehende Anfrage:", { topic, chapterTitle });
+
 		const chatCompletion = await client.chatCompletion({
 			model: "google/gemma-2-2b-it",
 			messages: [
 				{
 					role: "user",
-					content: `Du bist Tutitory, eine KI, die Tutorials und Leitfäden in Deutsch schreibt. Deine Aufgabe ist es, leicht verständliche, gut geschriebene und informative Tutorials/Leitfäden für Benutzer zu erstellen. Erstelle ein Kapitel mit dem Titel „${chapterTitle}“, das zum Thema „${topic}“ gehört.`
+					content: `Erstelle ein Kapitel mit dem Titel „${chapterTitle}“, das zum Thema „${topic}“ gehört.`
 				}
 			],
 			max_tokens: 1024
 		});
 
 		if (
-			!topic ||
-			!chapterTitle ||
-			topic.trim().length === 0 ||
-			chapterTitle.trim().length === 0
+			!chatCompletion.choices ||
+			chatCompletion.choices.length === 0 ||
+			!chatCompletion.choices[0].message?.content
 		) {
 			console.error(
-				"Fehlerhafte Antwortstruktur von HuggingFace:",
-				chatCompletion
+				"Ungültige API-Antwort:",
+				JSON.stringify(chatCompletion, null, 2)
 			);
-			throw new Error("Die API-Antwort ist ungültig.");
+			throw new Error("Die API-Antwort ist ungültig oder leer.");
 		}
 
-		const result =
-			chatCompletion.choices[0]?.message?.content?.trim() || "";
+		const result = chatCompletion.choices[0].message.content.trim();
+
+		if (!result) {
+			throw new Error(
+				`Keine Inhalte für das Kapitel '${chapterTitle}' generiert.`
+			);
+		}
 
 		return NextResponse.json(
 			{

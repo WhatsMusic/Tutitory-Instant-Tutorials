@@ -3,113 +3,121 @@
 import { useState, useEffect } from "react";
 import { Tutorial, Chapter } from "../types";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [activeChapter, setActiveChapter] = useState<Chapter | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Extrahiere Kapitel beim ersten Rendern
+
   useEffect(() => {
     if (Array.isArray(tutorial.content)) {
-      const extractedChapters = extractChapters(tutorial.content);
-      setChapters(extractedChapters);
-    } else {
-      console.warn("Tutorial content is not an array:", tutorial.content);
-      setChapters([]); // Set chapters to an empty array if content is not valid
+      setChapters(extractChapters(tutorial.content));
     }
   }, [tutorial.content]);
 
-  // Neuer Code für Caching-Funktionen
-  const saveToCache = (key: string, data: unknown) => {
-    localStorage.setItem(key, JSON.stringify(data));
-  };
-
-  const loadFromCache = (key: string) => {
-    const cachedData = localStorage.getItem(key);
-    return cachedData ? JSON.parse(cachedData) : null;
-  };
-
-  // Anpassen der Funktion handleGenerateChapter
   const handleGenerateChapter = async (chapterTitle: string) => {
     const cacheKey = `${tutorial.title}-${chapterTitle}`;
-    const cachedChapter = loadFromCache(cacheKey);
-
+    const cachedChapter = localStorage.getItem(cacheKey);
     if (cachedChapter) {
-      setActiveChapter(cachedChapter);
+      try {
+        setActiveChapter(JSON.parse(cachedChapter));
+      } catch (cacheError) {
+        console.error("Ungültige Cache-Daten:", cacheError);
+        localStorage.removeItem(cacheKey);
+      }
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch("/api/generate-tutorial", {
+      const res = await fetch("/api/generate-chapter", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ topic: tutorial.title, chapterTitle }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: tutorial.title.trim(), chapterTitle: chapterTitle.trim() }),
       });
 
+      // Logge die vollständige Antwort
+      console.log("API-Antwort:", res);
+
+      // Überprüfe, ob die Antwort erfolgreich ist
       if (!res.ok) {
-        throw new Error(`Fehler beim Abrufen des Kapitels: ${res.statusText}`);
+        const errorText = await res.text();
+        console.error("Fehlertext:", errorText);
+        throw new Error(`API-Fehler: ${res.status} ${res.statusText}`);
       }
 
-      const data: Chapter = await res.json();
-      setActiveChapter(data);
-      saveToCache(cacheKey, data); // Kapitel im Cache speichern
+      // Logge den Antworttext
+
+      try {
+        const responseBody = await res.text();
+        try {
+          const data: Chapter = JSON.parse(responseBody);
+          setActiveChapter(data);
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+        } catch (jsonError) {
+          console.error("Fehler beim Parsen von JSON:", responseBody, jsonError);
+          throw new Error("Ungültige JSON-Antwort von der API.");
+        }
+      } catch (error) {
+        console.error("Fehler beim Abrufen oder Parsen der Daten:", error);
+        alert(error instanceof Error ? error.message : "Unbekannter Fehler.");
+      }
+
+
     } catch (error) {
-      console.error("Fehler beim Laden des Kapitels:", error);
+      console.error("Fehler beim Abrufen oder Parsen der Daten:", error);
+      alert(error instanceof Error ? error.message : "Unbekannter Fehler.");
     } finally {
       setLoading(false);
     }
-  };
 
-
-  if (!chapters || chapters.length === 0) {
-    return <p className="text-gray-500">Keine Kapitel verfügbar.</p>;
   }
 
 
-  return (
-    <div className="max-h-screen w-full max-w-md bg-white p-6 rounded-lg shadow-md overflow-y-auto">
-      <h2 className="text-xl font-semibold mb-4">{tutorial.title}</h2>
 
-      {activeChapter ? (
+  return (
+    <div className="max-w-3xl mx-auto bg-white p-6 mt-5 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">{tutorial.title}</h2>
+      {!activeChapter ? (
         <div>
-          <h3 className="text-lg font-bold mt-4 mb-2">{activeChapter.title}</h3>
-          {activeChapter.content.map((paragraph, index) => (
-            <div key={index} className="mb-4 text-gray-700">
-              <ReactMarkdown>{paragraph}</ReactMarkdown>
-            </div>
-          ))}
+          <h3 className="text-xl font-semibold mb-4">Kapitelübersicht</h3>
+          <ul className="space-y-2 list-inside list-decimal">
+            {chapters.map((chapter) => (
+              <li key={chapter.title}>
+                <button
+                  onClick={() => handleGenerateChapter(chapter.title)}
+                  className="text-blue-500 underline hover:text-blue-700 focus:outline-none"
+                >
+                  {chapter.title}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <div>
+          <h3 className="text-xl font-semibold mb-4">{activeChapter.title}</h3>
+          <div className="prose prose-blue">
+            {/* Markdown wird hier gerendert */}
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {activeChapter.content.join("\n")}
+            </ReactMarkdown>
+          </div>
           <button
             onClick={() => setActiveChapter(null)}
-            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none"
           >
             Zurück zur Kapitelübersicht
           </button>
         </div>
-      ) : (
-        <ul className="list-inside list-decimal">
-          {chapters.map((chapter, index) => (
-            <li key={index} className="mb-4">
-              <button
-                onClick={() => handleGenerateChapter(chapter.title)}
-                className="text-blue-500 underline hover:text-blue-700"
-              >
-                {chapter.title}
-              </button>
-            </li>
-          ))}
-        </ul>
       )}
-
-      {loading && <p className="text-blue-500 mt-4">Das Kapitel wird geladen...</p>}
+      {loading && <p className="text-blue-500 mt-4">Kapitel wird geladen...</p>}
     </div>
   );
 }
 
-// Funktion zur Kapitel-Extraktion
 function extractChapters(content: string[]): Chapter[] {
   const chapters: Chapter[] = [];
   let currentChapter: Chapter | null = null;
@@ -130,4 +138,5 @@ function extractChapters(content: string[]): Chapter[] {
   }
 
   return chapters;
+
 }
