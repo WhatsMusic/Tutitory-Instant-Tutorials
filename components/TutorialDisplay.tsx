@@ -122,10 +122,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
     content.forEach((line) => { // Iterates over each line of content.
       const trimmedLine = line.trim(); // Trims whitespace from the line.
 
-      // Detect and ignore non-chapter sections like "Tutorialplan"
-      if (["Tutorialplan", "Expertenrolle", "Zielgruppe"].some(prefix => trimmedLine.startsWith(prefix))) {
-        return;
-      }
+
 
       // Detects a new chapter by a Markdown heading
       if (trimmedLine.startsWith("**")) { // Checks if the line starts with Markdown-style bold, indicating a chapter title.
