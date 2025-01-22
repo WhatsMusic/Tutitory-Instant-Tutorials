@@ -12,7 +12,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
   useEffect(() => { // useEffect hook that runs when the tutorial content changes.
     if (Array.isArray(tutorial.content)) { // Checks if the tutorial content is an array.
       const extractedChapters = extractChapters(tutorial.content); // Extracts chapters from the tutorial content.
-      console.log("Extracted chapters:", extractedChapters); // Debug output for extracted chapters.
+      // console.log("Extracted chapters:", extractedChapters); // Debug output for extracted chapters.
       setChapters(extractedChapters); // Sets the chapters state with the extracted chapters.
     }
   }, [tutorial.content]); // Dependency array for the useEffect hook, triggers when tutorial.content changes.
@@ -48,7 +48,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
       const data: Chapter = JSON.parse(responseBody); // Parses the response body as a Chapter object.
       setActiveChapter(data); // Sets the active chapter with the fetched data.
       localStorage.setItem(cacheKey, JSON.stringify(data)); // Caches the chapter data in local storage.
-      console.log(JSON.stringify(data));
+      // console.log(JSON.stringify(data));
     } catch (error) { // Catches and handles any errors during the fetch or parsing process.
       console.error("Error fetching or parsing data:", error);
       alert(error instanceof Error ? error.message : "Unknown error.");
@@ -67,12 +67,16 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
             {chapters.length > 0 ? (
               <div className="text-lg font-400 mb-4">
                 <ReactMarkdown className="text-gray-800 text-sm sm:text-base md:text-lg leading-relaxed">
-                  {chapters[0].title || "Keine Beschreibung verfügbar."}
+                  {chapters
+                    .filter((chapter) => chapter.title.startsWith("Beschreibung"))
+                    .map((chapter) => chapter.content.join("\n\n"))
+                    .join("\n\n") || "Keine Beschreibung verfügbar."}
                 </ReactMarkdown>
               </div>
             ) : (
               <p>Keine Kapitel verfügbar.</p>
             )}
+
           </div>
           <h3 className="text-xl font-semibold mb-4">Kapitelübersicht</h3>
           {loading ? ( // Zeige Ladezustand an, wenn Kapitel geladen wird
@@ -81,7 +85,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
             <ul className="space-y-2l text-left">
               {chapters.length > 0 ? (
                 chapters
-                  .filter((chapter) => !chapter.title.startsWith("Beschreibung") && !chapter.title.startsWith("Tutorialplan")) // Exclude chapters with "Beschreibung" in the title
+                  .filter((chapter) => !chapter.title.startsWith("Beschreibung") && !chapter.title.startsWith("Tutorialplan") && !chapter.title.startsWith("Zielgruppe") && !chapter.title.startsWith("Struktur") && !chapter.title.startsWith("Expertenrolle")) // Exclude chapters with "Beschreibung" in the title
                   .map((chapter, index) => (
                     <li key={index}>
                       <button

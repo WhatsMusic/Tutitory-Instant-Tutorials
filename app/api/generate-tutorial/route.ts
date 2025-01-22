@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 	const body = await req.json(); // Parses the request body as JSON.
 	const { topic, chapterTitle } = body; // Destructures topic and chapterTitle from the request body.
 
-	console.log("Received request:", body); // Logs the received request body for debugging.
+	// console.log("Received request:", body); // Logs the received request body for debugging.
 
 	if (
 		// Validates that both topic and chapterTitle are provided and not empty.
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 		topic.trim().length === 0 ||
 		chapterTitle.trim().length === 0
 	) {
-		console.log("Invalid input:", { topic, chapterTitle }); // Logs invalid input for debugging.
+		// console.log("Invalid input:", { topic, chapterTitle }); // Logs invalid input for debugging.
 		return NextResponse.json(
 			// Returns a JSON response with an error message and a 400 status code.
 			{
