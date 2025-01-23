@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/repository-open-graph-tutitory-ki-tutorial-generator.jpg", // Pfad zum Bild
+        url: "/images/repository-open-graph-tutitory-ki-tutorial-generator.jpg", // Pfad zum Bild
         width: 1200, // Standard-Breite für Open Graph-Bilder
         height: 630,  // Standard-Höhe für Open Graph-Bilder
         alt: "Tutitory: Dein KI-Tutorial-Generator",
@@ -44,7 +44,7 @@ export default function RootLayout({
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="/repository-open-graph-tutitory-ki-tutorial-generator.jpg"
+          content="/images/repository-open-graph-tutitory-ki-tutorial-generator.jpg"
         />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
