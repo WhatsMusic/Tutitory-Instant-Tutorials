@@ -37,31 +37,31 @@ export async function POST(req: Request) {
 		const tutorialResponse: Tutorial = {
 			// Creates a tutorial response object conforming to the Tutorial interface.
 			title: `Tutorial: ${topic}`, // Sets the tutorial title.
-			description: `A comprehensive introduction to the topic "${topic}".`, // Sets the tutorial description.
+			description: `Eine umfassende Einführung in das Thema "${topic}".`, // Sets the tutorial description.
 			chapters: [
 				// Defines an array of chapters for the tutorial.
 				{
-					title: "Introduction", // Title of the first chapter.
+					title: "Einleitung", // Title of the first chapter.
 					content: [
 						// Content of the first chapter.
-						`What is ${topic}?`,
-						`Why is ${topic} important?`
+						`Was ist ${topic}?`,
+						`Warum ist ${topic} wichtig?`
 					]
 				},
 				{
-					title: "Main Content", // Title of the second chapter.
+					title: "Hauptinhalt", // Title of the second chapter.
 					content: [
 						// Content of the second chapter.
-						`The key aspects of ${topic}.`,
-						`Practical examples and applications.`
+						`Die wichtigsten Aspekte von ${topic}.`,
+						`Praktische Beispiele und Anwendungen.`
 					]
 				},
 				{
-					title: "Conclusion", // Title of the third chapter.
+					title: "Schlussfolgerung", // Title of the third chapter.
 					content: [
 						// Content of the third chapter.
-						`Summary of the key points about ${topic}.`,
-						`Recommendations for further resources on ${topic}.`
+						`Zusammenfassung der wichtigsten Punkte zu ${topic}.`,
+						`Empfehlungen für weitere Ressourcen zu ${topic}.`
 					]
 				}
 			],

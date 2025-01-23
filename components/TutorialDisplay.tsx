@@ -78,9 +78,13 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
             )}
 
           </div>
-          <h3 className="text-xl font-semibold mb-4">Kapitelübersicht</h3>
+          {!loading ? (
+            <h3 className="text-xl font-semibold mb-4">Kapitelübersicht</h3>
+          ) : (
+            <div></div>
+          )}
           {loading ? ( // Zeige Ladezustand an, wenn Kapitel geladen wird
-            <p className="text-blue-500 text-center">Kapitel wird geladen...</p>
+            <p className="text-blue-500 text-center text-2xl blink">Kapitel wird geladen...</p>
           ) : (
             <ul className="space-y-2l text-left">
               {chapters.length > 0 ? (
@@ -100,7 +104,9 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
                 <p>Keine Kapitel verfügbar.</p>
               )}
             </ul>
+
           )}
+
         </div>
       ) : (
         <div className="prose prose-blue max-w-full px-2 py-4 sm:px-2 sm:py-6 bg-white rounded-lg shadow-md text-left">

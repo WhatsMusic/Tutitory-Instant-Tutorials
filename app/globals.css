@@ -35,3 +35,31 @@ a:hover {
     transform: rotate(360deg);
   }
 }
+
+
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .blink {
+    animation: blink 1s infinite;
+  }
+
+  .pulse {
+    animation: pulse 1.5s infinite;
+  }
+
