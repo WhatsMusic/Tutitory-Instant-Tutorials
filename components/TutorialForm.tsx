@@ -51,35 +51,37 @@ export default function TutorialForm({ setTutorialPlan }: { setTutorialPlan: (pl
   };
 
   return (
-    <div className="w-full max-w-full bg-white p-2 rounded-lg shadow-md">
-      {/* Container div with styling for the form, including background, padding, and shadow */}
-      <input
-        ref={inputRef} // Associates the input element with the inputRef reference.
-        type="text"
-        placeholder="Thema hier eingeben..."
-        value={topic} // Binds the input value to the topic state.
-        onChange={(e) => setTopic(e.target.value)} // Updates the topic state on input change.
-        className="w-full p-3 border border-gray-300 rounded mb-4"
-        aria-label="Enter topic"
-      />
-      <button
-        onClick={handleGeneratePlan} // Calls handleGeneratePlan when the button is clicked.
-        disabled={loading} // Disables the button if loading is true.
-        aria-disabled={loading} // Sets the aria-disabled attribute for accessibility.
-        className={`w-full py-2 rounded ${loading
-          ? "bg-gray-400 text-gray-700 cursor-not-allowed" // Styles for the button when disabled.
-          : "bg-blue-500 text-white hover:bg-blue-600" // Styles for the button when enabled.
-          }`}
-      >
-        {loading ? "Lädt..." : "Tutorial Erstellen"}
-      </button>
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-      {loading && (
-        <div className="flex justify-center mt-4">
-          <div className="loader border-t-2 border-blue-500 rounded-full w-6 h-6 animate-spin"></div>
-          {/* Displays a loading spinner if loading is true. */}
-        </div>
-      )}
+    <div className="w-full max-w-full flex flex-col justify-center bg-white p-2 rounded-lg shadow-md">
+      <div className="text-center">
+        {/* Container div with styling for the form, including background, padding, and shadow */}
+        <input
+          ref={inputRef} // Associates the input element with the inputRef reference.
+          type="text"
+          placeholder="Thema hier eingeben..."
+          value={topic} // Binds the input value to the topic state.
+          onChange={(e) => setTopic(e.target.value)} // Updates the topic state on input change.
+          className="w-full lg:max-w-prose p-3 border border-gray-300 rounded mb-4"
+          aria-label="Enter topic"
+        />
+        <button
+          onClick={handleGeneratePlan} // Calls handleGeneratePlan when the button is clicked.
+          disabled={loading} // Disables the button if loading is true.
+          aria-disabled={loading} // Sets the aria-disabled attribute for accessibility.
+          className={`w-full  lg:max-w-prose py-2 rounded mb-4 ${loading
+            ? "bg-gray-400 text-gray-700 cursor-not-allowed" // Styles for the button when disabled.
+            : "bg-blue-500 text-white hover:bg-blue-600" // Styles for the button when enabled.
+            }`}
+        >
+          {loading ? "Lädt..." : "Tutorial Erstellen"}
+        </button>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        {loading && (
+          <div className="flex justify-center mt-4">
+            <div className="loader border-t-2 border-blue-500 rounded-full w-6 h-6 animate-spin"></div>
+            {/* Displays a loading spinner if loading is true. */}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

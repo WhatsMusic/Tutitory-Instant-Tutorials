@@ -85,7 +85,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) { 
             <ul className="space-y-2l text-left">
               {chapters.length > 0 ? (
                 chapters
-                  .filter((chapter) => !chapter.title.startsWith("Beschreibung") && !chapter.title.startsWith("Tutorialplan") && !chapter.title.startsWith("Zielgruppe") && !chapter.title.startsWith("Struktur") && !chapter.title.startsWith("Expertenrolle")) // Exclude chapters with "Beschreibung" in the title
+                  .filter((chapter) => !chapter.title.startsWith("Beschreibung") && !chapter.title.startsWith("Tutorialplan") && !chapter.title.startsWith("Rolle") && !chapter.title.startsWith("Zielgruppe") && !chapter.title.startsWith("Struktur") && !chapter.title.startsWith("Expertenrolle")) // Exclude chapters with "Beschreibung" in the title
                   .map((chapter, index) => (
                     <li key={index}>
                       <button
