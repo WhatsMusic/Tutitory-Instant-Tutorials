@@ -51,7 +51,7 @@ export default function TutorialForm({ setTutorialPlan }: { setTutorialPlan: (pl
   };
 
   return (
-    <div className="w-full max-w-lg sm:max-w-full flex flex-col justify-center bg-white p-2 rounded-lg shadow-md">
+    <div className="w-full flex flex-col justify-center bg-white p-2 rounded-lg shadow-md">
       <div className="text-center">
         {/* Container div with styling for the form, including background, padding, and shadow */}
         <input
@@ -60,7 +60,7 @@ export default function TutorialForm({ setTutorialPlan }: { setTutorialPlan: (pl
           placeholder="Thema hier eingeben..."
           value={topic} // Binds the input value to the topic state.
           onChange={(e) => setTopic(e.target.value)} // Updates the topic state on input change.
-          className="w-full lg:max-w-prose p-3 border border-gray-300 rounded mb-4"
+          className="w-full lg:w-2/4 p-3 border border-gray-300 rounded mb-4"
           aria-label="Enter topic"
         />
         <button
