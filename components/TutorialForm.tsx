@@ -51,7 +51,7 @@ export default function TutorialForm({ setTutorialPlan }: { setTutorialPlan: (pl
   };
 
   return (
-    <div className="w-full max-w-full flex flex-col justify-center bg-white p-2 rounded-lg shadow-md">
+    <div className="w-full max-w-lg sm:max-w-full flex flex-col justify-center bg-white p-2 rounded-lg shadow-md">
       <div className="text-center">
         {/* Container div with styling for the form, including background, padding, and shadow */}
         <input
