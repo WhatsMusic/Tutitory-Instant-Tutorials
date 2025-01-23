@@ -60,7 +60,7 @@ export default function TutorialForm({ setTutorialPlan }: { setTutorialPlan: (pl
           placeholder="Thema hier eingeben..."
           value={topic} // Binds the input value to the topic state.
           onChange={(e) => setTopic(e.target.value)} // Updates the topic state on input change.
-          className="w-full lg:w-2/4 p-3 border border-gray-300 rounded mb-4"
+          className="w-full lg:w-3/4 p-3 border border-gray-300 rounded mb-4"
           aria-label="Enter topic"
         />
         <button
