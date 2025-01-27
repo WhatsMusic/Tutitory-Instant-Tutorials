@@ -24,8 +24,10 @@ Beginne direkt mit dem Inhalt, ohne diese Anweisungen zu wiederholen.`;
 			model: "google/gemma-2-2b-it",
 			inputs: prompt,
 			parameters: {
-				max_new_tokens: 2048,
-				temperature: 0.4,
+				max_new_tokens: 1024,
+				min_new_tokens: 100,
+				do_sample: true,
+				temperature: 0.2,
 				top_p: 0.9
 			}
 		});
@@ -47,17 +49,21 @@ Beginne direkt mit dem Inhalt, ohne diese Anweisungen zu wiederholen.`;
 		}
 
 		if (!chapterContent || chapterContent.length === 0) {
-			throw new Error("Generated chapter content is empty or invalid");
+			throw new Error(
+				"Der generierte Kapitelinhalt ist leer oder ungültig."
+			);
 		}
 
 		return NextResponse.json({ content: chapterContent });
 	} catch (error) {
-		console.error("Error generating chapter content:", error);
+		console.error("Fehler beim Generieren des Kapitelinhalts:", error);
 		return NextResponse.json(
 			{
-				error: "Failed to generate chapter content",
+				error: "Es konnte kein Kapitelinhalt generiert werden",
 				details:
-					error instanceof Error ? error.message : "Unknown error"
+					error instanceof Error
+						? error.message
+						: "Unbekannter Fehler"
 			},
 			{ status: 500 }
 		);
