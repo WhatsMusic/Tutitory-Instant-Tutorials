@@ -57,16 +57,16 @@ export default function ChapterContent({
 
     return (
         <div className="space-y-8">
-    <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
-        <button onClick={onBack} className="flex items-center text-blue-600 hover:text-blue-800 mb-4 sm:mb-0">
-            <ChevronLeft className="w-5 h-5 mr-1" />
-            Zurück zum Inhaltsverzeichnis
-        </button>
-        <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
+                <button onClick={onBack} className="flex items-center text-blue-600 hover:text-blue-800 mb-4 sm:mb-0">
+                    <ChevronLeft className="w-5 h-5 mr-1" />
+                    Zurück zum Inhaltsverzeichnis
+                </button>
+                <div className="flex flex-col sm:flex-row gap-4">
                     <button
                         onClick={onPrevious}
                         disabled={!hasPrevious}
-                        className="flex items-center px-4 py-2 bg-blue-100 text-blue-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center px-4 sm:px-2 py-2 bg-blue-100 text-blue-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Vorheriges Kapitel
@@ -74,7 +74,7 @@ export default function ChapterContent({
                     <button
                         onClick={onNext}
                         disabled={!hasNext}
-                        className="flex items-center px-4 py-2 bg-blue-100 text-blue-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center px-4 sm:px-2 py-2 bg-blue-100 text-blue-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Nächstes Kapitel
                         <ArrowRight className="w-4 h-4 ml-2" />
@@ -89,8 +89,8 @@ export default function ChapterContent({
                         h2: ({ children }) => <h2 className="text-2xl font-semibold mt-8 mb-4">{children}</h2>,
                         h3: ({ children }) => <h3 className="text-xl font-medium mt-6 mb-3">{children}</h3>,
                         div: ({ children }) => <div className="mb-4">{children}</div>,
-                        ul: ({ children }) => <ul className="list-disc pl-6 mb-4">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-6 mb-4">{children}</ol>,
+                        ul: ({ children }) => <ul className="list-disc pl-6 sm:pl-2 mb-4">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal pl-6 sm:pl-2 mb-4">{children}</ol>,
                         li: ({ children }) => <li className="mb-2">{children}</li>,
                         blockquote: ({ children }) => (
                             <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4">{children}</blockquote>
@@ -98,11 +98,13 @@ export default function ChapterContent({
                         code: ({ className, children }) => {
                             const match = /language-(\w+)/.exec(className || '')
                             return !className ? (
-                                <div className="bg-gray-100 rounded p-4 overflow-x-auto">
+                                <div className="bg-gray-100 rounded p-4 sm:p-1 overflow-x-auto">
                                     <code className={match ? className : ''}>{children}</code>
                                 </div>
                             ) : (
-                                <code className="bg-gray-100 rounded px-1 py-0.5">{children}</code>
+                                <div className="bg-gray-100 rounded p-4 sm:p-1 overflow-x-auto">
+                                    <code className="bg-gray-100 rounded px-1 py-0.5">{children}</code>
+                                </div>
                             )
                         },
                     }}
@@ -111,39 +113,39 @@ export default function ChapterContent({
                 </ReactMarkdown>
             </div>
 
-            <div className="mt-12 p-6 bg-gray-50 rounded-lg">
+            <div className="mt-12 p-6 sm:p-2 bg-gray-50 rounded-lg">
                 <h3 className="text-xl font-semibold mb-4">Fragen zum Kapitel</h3>
                 <div className="space-y-4">
                     <input
                         type="text"
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
-                        className="w-full p-3 border rounded-lg"
+                        className="w-full p-3 sm:p-1 border rounded-lg"
                         placeholder="Stellen Sie hier Ihre Frage..."
                     />
                     <button
                         onClick={handleAskQuestion}
                         disabled={isLoading || !question.trim()}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 sm:px-2 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? "Lädt..." : "Frage stellen"}
                     </button>
                 </div>
                 {error && (
-                    <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                    <div className="mt-4 p-4 sm:p-1 bg-red-100 text-red-700 rounded-lg">
                         <p className="font-semibold">Error:</p>
                         <p>{error}</p>
                     </div>
                 )}
                 {answer && (
-                    <div className="mt-6 p-4 bg-white rounded-lg">
+                    <div className="mt-6 p-4 sm:p-1 bg-white rounded-lg">
                         <h4 className="font-semibold mb-2">Antwort:</h4>
                         <ReactMarkdown
                             components={{
-                                p: ({ children }) => <p className="mb-2">{children}</p>,
-                                ul: ({ children }) => <ul className="list-disc pl-6 mb-2">{children}</ul>,
-                                ol: ({ children }) => <ol className="list-decimal pl-6 mb-2">{children}</ol>,
-                                li: ({ children }) => <li className="mb-1">{children}</li>,
+                                div: ({ children }) => <div className="mb-2">{children}</div>,
+                                ul: ({ children }) => <ul className="list-disc pl-6 sm:pl-2 mb-2">{children}</ul>,
+                                ol: ({ children }) => <ol className="list-decimal pl-6 sm:pl-2 mb-2">{children}</ol>,
+                                li: ({ children }) => <li className="mb-1 sm:pl-2">{children}</li>,
                             }}
                         >
                             {answer}

@@ -68,9 +68,9 @@ export default function RootLayout({
           <div className="container mx-auto text-center">
             © 2025 Tutitory, All rights reserved.
             <div className="mt-2">
-              <a href="/impressum" className="text-blue-400 hover:underline">
+              <Link href="/impressum" className="text-blue-400 hover:underline">
                 Impressum
-              </a>
+              </Link>
             </div>
           </div>
         </footer>

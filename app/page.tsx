@@ -9,7 +9,7 @@ export default function Home() {
   const [tutorial, setTutorial] = useState<Tutorial | null>(null)
 
   return (
-    <div className="container min-h-[70svh] mx-auto p-4">
+    <div className="container min-h-[70svh] mx-auto p-4 sm:p-1">
       <h1 className="text-3xl font-bold mb-4">Tutitory.com</h1>
       {!tutorial ? <TutorialForm setTutorial={setTutorial} /> : <TutorialDisplay tutorial={tutorial} />}
     </div>

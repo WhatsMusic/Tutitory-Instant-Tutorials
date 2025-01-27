@@ -42,12 +42,12 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const currentIndex = selectedChapter ? tutorial.chapters.findIndex((c) => c.title === selectedChapter.title) : -1
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
+    <div className="max-w-4xl mx-auto p-6 sm:p-2 bg-white rounded-lg shadow-sm">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">{tutorial.title}</h1>
       <p className="text-lg text-gray-600 mb-8">{tutorial.description}</p>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 sm:px-2 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -82,7 +82,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
             {tutorial.chapters.map((chapter, index) => (
               <div
                 key={index}
-                className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+                className="p-4 sm:p-2 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
                 onClick={() => handleChapterSelect(chapter)}
               >
                 <h3 className="text-xl font-medium text-gray-900 mb-2">{chapter.title}</h3>

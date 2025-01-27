@@ -24,22 +24,22 @@ export default function TutorialForm({ setTutorial }: { setTutorial: (tutorial: 
       try {
         data = await res.json()
       } catch (jsonError) {
-        console.error("Error parsing JSON:", jsonError)
-        throw new Error("Failed to parse server response")
+        console.error("Fehler beim Parsen von JSON:", jsonError)
+        throw new Error("Serverantwort konnte nicht analysiert werden")
       }
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to generate table of contents")
+        throw new Error(data.error || "Inhaltsverzeichnis konnte nicht erstellt werden")
       }
 
       if (!data.title || !data.description || !data.chapters || data.chapters.length === 0) {
-        throw new Error("Invalid tutorial data received")
+        throw new Error("IUngültige Tutorial-Daten empfangen")
       }
       setTutorial(data)
 
     } catch (error) {
-      console.error("Error generating table of contents:", error)
-      setError(error instanceof Error ? error.message : "An unexpected error occurred")
+      console.error("Fehler beim Erstellen des Inhaltsverzeichnisses:", error)
+      setError(error instanceof Error ? error.message : "Ein unerwarteter Fehler ist aufgetreten")
     } finally {
       setLoading(false)
     }
