@@ -1,101 +1,63 @@
-import { NextResponse } from "next/server"; // Imports Next.js response utility for server-side responses.
-import { HfInference } from "@huggingface/inference"; // Imports the Hugging Face inference client.
+import { NextResponse } from "next/server";
+import { HfInference } from "@huggingface/inference";
 
-const client = new HfInference(process.env.HUGGINGFACE_API_KEY); // Initializes the Hugging Face client with an API key from environment variables.
+const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(req: Request) {
-	// Defines an asynchronous POST function to handle HTTP POST requests.
-	const body = await req.json(); // Parses the request body as JSON.
-	const { topic, chapterTitle } = body; // Destructures topic and chapterTitle from the request body.
-
-	// console.log("Received request:", body); // Logs the received request body for debugging.
-
-	if (
-		// Validates that both topic and chapterTitle are provided and not empty.
-		!topic ||
-		!chapterTitle ||
-		topic.trim() === "" ||
-		chapterTitle.trim() === ""
-	) {
-		// console.log("Invalid input:", { topic, chapterTitle }); // Logs invalid input for debugging.
-		return NextResponse.json(
-			// Returns a JSON response with an error message and a 400 status code.
-			{
-				error: "The topic and chapter title must not be empty.",
-				hint: "Please check your inputs and try again."
-			},
-			{ status: 400 }
-		);
-	}
-
 	try {
-		// console.log("Incoming request:", { topic, chapterTitle }); // Logs the incoming request for debugging.
+		const { title, chapterTitle } = await req.json();
 
-		const chatCompletion = await client.chatCompletion({
-			// Calls the Hugging Face API for chat completion.
-			model: "google/gemma-2-2b-it", // Specifies the model to use for generating content.
-			messages: [
-				{
-					role: "user",
-					content: `Erstelle in Deutsch ein Kapitel mit dem Titel „${chapterTitle}“, das zum Thema „${topic}“ gehört.`
-				}
-			],
-			temperature: 0.3,
-			max_tokens: 2048,
-			top_p: 0.7
+		const prompt = `Als KI-Assistent, der detaillierte, zusammenhängende und informative Tutorials erstellt, generiere bitte den Inhalt für das Kapitel "${chapterTitle}" im Tutorial "${title}".
+
+Der Inhalt sollte detailliert, leicht verständlich und gut strukturiert sein. Verwende die folgende Struktur für den Inhalt:
+
+1. Einleitung: Kurze Einführung in das Thema des Kapitels
+2. Hauptteil: Detaillierte Erklärungen, aufgeteilt in 2-3 Unterabschnitte
+3. Beispiele: Praktische Beispiele oder Anwendungsfälle
+4. Zusammenfassung: Kurze Zusammenfassung der wichtigsten Punkte
+
+Formatiere den Text mit Markdown für bessere Lesbarkeit. Stelle sicher, dass der Inhalt relevant, informativ und gut organisiert ist.
+
+Beginne direkt mit dem Inhalt, ohne diese Anweisungen zu wiederholen.`;
+
+		const textGeneration = await client.textGeneration({
+			model: "google/gemma-2-2b-it",
+			inputs: prompt,
+			parameters: {
+				max_new_tokens: 2048,
+				temperature: 0.4,
+				top_p: 0.9
+			}
 		});
 
-		if (
-			// Checks if the API response is valid and contains content.
-			!chatCompletion.choices ||
-			chatCompletion.choices.length === 0 ||
-			!chatCompletion.choices[0].message?.content
-		) {
-			console.error(
-				// Logs an error if the API response is invalid or empty.
-				"Invalid API response:",
-				JSON.stringify(chatCompletion, null, 2)
-			);
-			throw new Error("The API response is invalid or empty."); // Throws an error for invalid API response.
-		}
+		let chapterContent = textGeneration.generated_text.trim();
 
-		const result = chatCompletion.choices[0].message.content.trim(); // Extracts and trims the content from the API response.
-
-		if (!result) {
-			// Checks if the result is empty after trimming.
-			throw new Error( // Throws an error if no content was generated.
-				`No content generated for the chapter '${chapterTitle}'.`
-			);
-		}
-
-		return NextResponse.json(
-			// Returns a JSON response with the generated chapter content and a 200 status code.
-			{
-				title: chapterTitle,
-				content: result
-					.split("\n")
-					.map((line) => line.trim()) // Trims each line of the content.
-					.filter((line) => line) // Filters out empty lines.
-			},
-			{ status: 200 }
+		// Remove the prompt if it's included in the response
+		const promptEndIndex = chapterContent.indexOf(
+			"Beginne direkt mit dem Inhalt, ohne diese Anweisungen zu wiederholen."
 		);
+		if (promptEndIndex !== -1) {
+			chapterContent = chapterContent
+				.substring(
+					promptEndIndex +
+						"Beginne direkt mit dem Inhalt, ohne diese Anweisungen zu wiederholen."
+							.length
+				)
+				.trim();
+		}
+
+		if (!chapterContent || chapterContent.length === 0) {
+			throw new Error("Generated chapter content is empty or invalid");
+		}
+
+		return NextResponse.json({ content: chapterContent });
 	} catch (error) {
-		// Catches and handles any errors during the process.
-		const errorMessage = // Determines the error message to display.
-			error instanceof Error
-				? error.message
-				: "An unknown error occurred";
-
-		console.error(
-			// Logs the error message for debugging.
-			`Error generating content for '${chapterTitle}':`,
-			error
-		);
-
+		console.error("Error generating chapter content:", error);
 		return NextResponse.json(
-			// Returns a JSON response with an error message and a 500 status code.
 			{
-				error: `Error generating content for '${chapterTitle}': ${errorMessage}`
+				error: "Failed to generate chapter content",
+				details:
+					error instanceof Error ? error.message : "Unknown error"
 			},
 			{ status: 500 }
 		);
