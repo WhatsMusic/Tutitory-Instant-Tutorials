@@ -54,7 +54,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`bg-gray-50 text-gray-800 ${inter.className}`}>
-        <header className="bg-[#106e56] text-white p-4">
+        <header className="bg-[#106e56] text-white p-2">
           <div className="container mx-auto flex justify-between items-center">
             <h1 className="text-xl font-bold">
               <Link href="/" className="text-white hover:text-white">
@@ -63,7 +63,7 @@ export default function RootLayout({
             </h1>
           </div>
         </header>
-        <main className="container mx-auto p-6 sm:p-1">{children}</main>
+        <main className="container mx-auto p-2 sm:p-2">{children}</main>
         <footer className="bg-[#106e56] text-white p-4 mt-6">
           <div className="container mx-auto text-center">
             © 2025 Tutitory, All rights reserved.

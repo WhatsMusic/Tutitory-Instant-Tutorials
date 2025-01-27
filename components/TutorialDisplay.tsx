@@ -42,7 +42,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const currentIndex = selectedChapter ? tutorial.chapters.findIndex((c) => c.title === selectedChapter.title) : -1
 
   return (
-    <div className="max-w-4xl mx-auto p-6 sm:p-2 bg-white rounded-lg shadow-sm">
+    <div className="w-full mx-auto p-6 sm:p-2 bg-white rounded-lg shadow-sm">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">{tutorial.title}</h1>
       <p className="text-lg text-gray-600 mb-8">{tutorial.description}</p>
 
