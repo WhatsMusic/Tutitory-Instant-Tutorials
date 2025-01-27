@@ -57,12 +57,12 @@ export default function ChapterContent({
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between mb-6">
-                <button onClick={onBack} className="flex items-center text-blue-600 hover:text-blue-800">
-                    <ChevronLeft className="w-5 h-5 mr-1" />
-                    Zurück zum Inhaltsverzeichnis
-                </button>
-                <div className="flex gap-4">
+    <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
+        <button onClick={onBack} className="flex items-center text-blue-600 hover:text-blue-800 mb-4 sm:mb-0">
+            <ChevronLeft className="w-5 h-5 mr-1" />
+            Zurück zum Inhaltsverzeichnis
+        </button>
+        <div className="flex flex-col sm:flex-row gap-4">
                     <button
                         onClick={onPrevious}
                         disabled={!hasPrevious}
@@ -98,9 +98,9 @@ export default function ChapterContent({
                         code: ({ className, children }) => {
                             const match = /language-(\w+)/.exec(className || '')
                             return !className ? (
-                                <pre className="bg-gray-100 rounded p-4 overflow-x-auto">
+                                <div className="bg-gray-100 rounded p-4 overflow-x-auto">
                                     <code className={match ? className : ''}>{children}</code>
-                                </pre>
+                                </div>
                             ) : (
                                 <code className="bg-gray-100 rounded px-1 py-0.5">{children}</code>
                             )

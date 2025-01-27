@@ -63,7 +63,7 @@ export default function RootLayout({
             </h1>
           </div>
         </header>
-        <main className="container mx-auto p-6">{children}</main>
+        <main className="container mx-auto p-6 sm:p-1">{children}</main>
         <footer className="bg-gray-800 text-white p-4 mt-6">
           <div className="container mx-auto text-center">
             © 2025 Tutitory, All rights reserved.
