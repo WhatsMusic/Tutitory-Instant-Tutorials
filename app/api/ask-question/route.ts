@@ -6,10 +6,10 @@ const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(req: Request) {
 	try {
-		const { chapterTitle, question } = await req.json();
-
+		const { tutorialTitle, chapterTitle, question } = await req.json();
+		console.log(tutorialTitle, chapterTitle, question);
 		const prompt = `Du bist Tutitory, eine KI, die deutsche Tutorials und Anleitungen schreibt.
-    Beantworte die folgende Frage zum Kapitel "${chapterTitle}":
+    Beantworte die folgende Frage zum Kapitel "${chapterTitle}" aus dem Tutorial "${tutorialTitle}":
     ${question}
     Gib eine detaillierte und verständliche Antwort. Formatiere die Antwort mit Markdown für bessere Lesbarkeit.
     Beginne deine Antwort direkt, ohne diese Anweisungen zu wiederholen.`;
@@ -18,8 +18,10 @@ export async function POST(req: Request) {
 			model: "google/gemma-2-2b-it",
 			inputs: prompt,
 			parameters: {
-				max_new_tokens: 2048,
-				temperature: 0.4,
+				max_new_tokens: 1024,
+				min_new_tokens: 100,
+				do_sample: true,
+				temperature: 0.2,
 				top_p: 0.9
 			}
 		});

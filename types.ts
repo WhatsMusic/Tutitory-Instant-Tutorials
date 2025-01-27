@@ -8,4 +8,5 @@ export interface Chapter {
 	title: string;
 	description: string;
 	content?: string;
+	tutorialTitle: string;
 }

@@ -117,7 +117,8 @@ function parseTutorialContent(content: string): Tutorial {
 					title: chapterTitle.trim(),
 					description:
 						descriptionParts.join(":").trim() ||
-						"Keine Beschreibung verfügbar"
+						"Keine Beschreibung verfügbar",
+					tutorialTitle: title
 				});
 			}
 		}
@@ -133,7 +134,9 @@ function parseTutorialContent(content: string): Tutorial {
 				: [
 						{
 							title: "Einführung",
-							description: "Erste Schritte mit diesem Thema"
+							description: "Erste Schritte mit diesem Thema",
+							tutorialTitle:
+								title || userTopic || "Neues Tutorial"
 						}
 				  ]
 	};

@@ -42,7 +42,7 @@ export default function ChapterContent({
             const res = await fetch("/api/ask-question", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chapterTitle: chapter.title, question }),
+                body: JSON.stringify({ tutorialTitle: chapter.tutorialTitle, chapterTitle: chapter.title, question }),
             })
 
             if (!res.ok) {

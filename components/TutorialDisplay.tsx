@@ -17,7 +17,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         const res = await fetch("/api/generate-chapter", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: tutorial.title, chapterTitle: chapter.title }),
+          body: JSON.stringify({ tutorialTitle: tutorial.title, chapterTitle: chapter.title }),
         })
 
         if (!res.ok) {
