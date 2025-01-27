@@ -55,7 +55,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#106e56]" />
           <span className="ml-2 text-lg text-gray-600">Kapitel wird geladen...</span>
         </div>
       ) : selectedChapter ? (
@@ -82,7 +82,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
             {tutorial.chapters.map((chapter, index) => (
               <div
                 key={index}
-                className="p-4 sm:p-2 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+                className="p-4 sm:p-2 bg-[#eafbf6] rounded-lg hover:bg-[#d9f2eb] transition-colors cursor-pointer"
                 onClick={() => handleChapterSelect(chapter)}
               >
                 <h3 className="text-xl font-medium text-gray-900 mb-2">{chapter.title}</h3>

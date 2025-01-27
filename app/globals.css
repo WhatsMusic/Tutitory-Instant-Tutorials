@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --primary: #1e40af;
-  --secondary: #2563eb;
+  --primary: #106e56;
+  --secondary: #106e56;
   --text: #374151;
   --background: #f3f4f6;
 }
@@ -26,7 +26,7 @@ a:hover {
 }
 
 .loader {
-  border-top-color: #3498db;
+  border-top-color: #106e56;
   animation: spin 1s linear infinite;
 }
 

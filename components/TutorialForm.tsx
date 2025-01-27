@@ -51,11 +51,11 @@ export default function TutorialForm({ setTutorial }: { setTutorial: (tutorial: 
         type="text"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
-        placeholder="Geben Sie ein Thema für Ihr Tutorial ein"
+        placeholder="Thema eingeben"
         className="w-full p-2 border rounded"
         required
       />
-      <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded" disabled={loading}>
+      <button type="submit" className="w-full bg-[#106e56] text-white p-2 rounded" disabled={loading}>
         {loading ? "Generiere..." : "Tutorial generieren"}
       </button>
       {error && <p className="text-red-500">{error}</p>}
