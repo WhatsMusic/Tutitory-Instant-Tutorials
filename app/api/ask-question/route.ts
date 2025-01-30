@@ -8,11 +8,11 @@ export async function POST(req: Request) {
 	try {
 		const { tutorialTitle, chapterTitle, question } = await req.json();
 		console.log(tutorialTitle, chapterTitle, question);
-		const prompt = `Du bist Tutitory, eine KI, die deutsche Tutorials und Anleitungen schreibt.
-    Beantworte die folgende Frage zum Kapitel "${chapterTitle}" aus dem Tutorial "${tutorialTitle}":
+		const prompt = `You are Tutitory, an AI that writes German tutorials and guides.
+    Answer the following question about the chapter "${chapterTitle}" from the tutorial "${tutorialTitle}":
     ${question}
-    Gib eine detaillierte und verständliche Antwort. Formatiere die Antwort mit Markdown für bessere Lesbarkeit.
-    Beginne deine Antwort direkt, ohne diese Anweisungen zu wiederholen.`;
+    Provide a detailed and understandable answer. Format your response using Markdown for better readability.
+    Start your answer immediately, without repeating these instructions.`;
 
 		const textGeneration = await client.textGeneration({
 			model: "google/gemma-2-2b-it",
@@ -30,13 +30,13 @@ export async function POST(req: Request) {
 
 		// Remove the prompt if it's included in the response
 		const promptEndIndex = answer.indexOf(
-			"Beginne deine Antwort direkt, ohne diese Anweisungen zu wiederholen."
+			"Start your answer immediately, without repeating these instructions."
 		);
 		if (promptEndIndex !== -1) {
 			answer = answer
 				.substring(
 					promptEndIndex +
-						"Beginne deine Antwort direkt, ohne diese Anweisungen zu wiederholen."
+						"Start your answer immediately, without repeating these instructions."
 							.length
 				)
 				.trim();
