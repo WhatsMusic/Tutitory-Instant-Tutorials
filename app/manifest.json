@@ -1,21 +1,27 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
-  "icons": [
-    {
-      "src": "/web-app-manifest-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/web-app-manifest-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "theme_color": "#ffffff",
-  "background_color": "#334050",
-  "display": "standalone"
+	"name": "Tutitory - Dein Tutorial-Generator",
+	"short_name": "Tutitory",
+	"description": "Erstelle detaillierte Tutorials mit Tutitory, dem KI-Tutorial-Generator.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "minimal-ui",
+	"orientation": "portrait",
+	"theme_color": "#ffffff",
+	"background_color": "#334050",
+	"lang": "de",
+	"categories": ["education", "productivity", "reference"],
+	"icons": [
+		{
+			"src": "/web-app-manifest-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "maskable any"
+		},
+		{
+			"src": "/web-app-manifest-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable any"
+		}
+	]
 }

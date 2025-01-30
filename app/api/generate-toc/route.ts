@@ -1,42 +1,63 @@
 import { NextResponse } from "next/server";
-import type { Tutorial } from "../../../types";
+import { v4 as uuidv4 } from "uuid";
+import type { Chapter, Tutorial } from "../../../types";
 import { HfInference } from "@huggingface/inference";
 
 const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
-let userTopic = "";
 
 export async function POST(req: Request) {
 	try {
-		const { topic } = await req.json();
-		userTopic = topic;
+		const { topic, locale = "en" } = await req.json();
+
+		if (!process.env.HUGGINGFACE_API_KEY) {
+			throw new Error("❌ Error: HUGGINGFACE_API_KEY is not set.");
+		}
+
+		console.log("✅ Hugging Face API key found, starting AI generation...");
+
+		const prompt = `
+You are an AI that generates structured tutorials. Follow the exact JSON format provided below without deviation.
+
+{
+  "title": "Title of the tutorial",
+  "description": "Brief summary of the tutorial",
+  "tags": ["tag1", "tag2"],
+  "keywords": ["keyword1", "keyword2"],
+  "chapters": [
+    {
+      "title": "Chapter 1 Title",
+      "description": "Brief summary of chapter 1",
+      "tags": ["tag1", "tag2"],
+      "keywords": ["keyword1", "keyword2"]
+    },
+    {
+      "title": "Chapter 2 Title",
+      "description": "Brief summary of chapter 2",
+      "tags": ["tag1", "tag2"],
+      "keywords": ["keyword1", "keyword2"]
+    }
+  ]
+}
+
+Make sure the response strictly follows this JSON structure.
+- Do not add markdown formatting like \`\`\`json.
+- Do not add any explanations or additional text.
+- The response must be valid JSON and contain exactly 5 chapters.
+- Ensure that **all JSON elements are fully closed and valid**.
+
+Now generate a tutorial for the topic: "${topic}" in ${locale}.
+`;
 		const chatCompletion = await client.chatCompletion({
 			model: "google/gemma-2-2b-it",
 			messages: [
-				// {
-				// 	role: "system",
-				// 	content:
-				// 		"You are an AI that generates structured tutorials. Follow the exact format provided without deviation."
-				// },
 				{
 					role: "user",
-					content: `Erstelle ein detailliertes Inhaltsverzeichnis für das Tutorial zum Thema „${topic}“. 
-Das Tutorial sollte genau 5 Kapitel haben. Verwende keine Aufzählungszeichen, Nummerierungen oder Unterkapitel. Stelle sicher, dass alle Teile ausgefüllt sind und der Inhalt aussagekräftig und für das Thema relevant ist.
-Formatiere die Antwort genau wie folgt, ohne zusätzliche Formatierung:
-TUTORIAL:
-TITLE: [Titel des Tutorials]
-DESCRIPTION: [Beschreibe das Tutorial in 1–2 Sätzen]
-CHAPTERS:
-- [Title 1]: [Kurze Beschreibung des 1. Kapitels in einem Satz]
-- [Title 2]: [Kurze Beschreibung des 2. Kapitels in einem Satz]
-- [Title 3]: [Kurze Beschreibung des 3. Kapitels in einem Satz]
-- [Title 4]: [Kurze Beschreibung des 4. Kapitels in einem Satz]
-- [Title 5]: [Kurze Beschreibung des 5. Kapitels in einem Satz]
-`
+					content: prompt
 				}
 			],
 			provider: "hf-inference",
-			top_p: 0.9,
-			max_tokens: 500,
+			top_p: 0.8,
+			max_tokens: 2048,
 			temperature: 0.3
 		});
 
@@ -44,100 +65,82 @@ CHAPTERS:
 
 		if (!generatedContent) {
 			return NextResponse.json(
-				{ error: "Inhalte konnten nicht generiert werden" },
+				{ error: "No content generated" },
 				{ status: 500 }
 			);
 		}
 
-		console.log("Generierte Inhalte:", generatedContent);
-
-		const parsedTutorial = parseTutorialContent(generatedContent);
-
-		if (
-			!parsedTutorial.title ||
-			!parsedTutorial.description ||
-			parsedTutorial.chapters.length === 0
-		) {
+		try {
+			const cleanedContent = cleanJsonString(generatedContent); // Clean the JSON string
+			const parsedTutorial = parseTutorialContent(cleanedContent);
+			return NextResponse.json(parsedTutorial);
+		} catch (error) {
+			console.error("Error parsing/cleaning JSON:", error);
 			return NextResponse.json(
-				{
-					error: "Der generierte Inhalt hat nicht das erwartete Format"
-				},
+				{ error: "Invalid JSON received/generated" },
 				{ status: 500 }
 			);
 		}
-
-		return NextResponse.json(parsedTutorial);
 	} catch (error) {
-		console.error(
-			"Fehler beim Erstellen des Inhaltsverzeichnisses:",
-			error
-		);
+		console.error("Error in POST route:", error);
 		return NextResponse.json(
-			{
-				error: "Inhaltsverzeichnis konnte nicht erstellt werden",
-				details:
-					error instanceof Error
-						? error.message
-						: "Unbekannter Fehler"
-			},
+			{ error: "An unexpected error occurred" },
 			{ status: 500 }
 		);
 	}
 }
 
-function parseTutorialContent(content: string): Tutorial {
-	const chapters: Tutorial["chapters"] = [];
-	let title = "";
-	let description = "";
+function cleanJsonString(jsonString: string): string {
+	try {
+		// Find the first and last occurrences of curly braces
+		const firstBraceIndex = jsonString.indexOf("{");
+		const lastBraceIndex = jsonString.lastIndexOf("}");
 
-	// Split content into lines and remove empty lines
-	const lines = content.split("\n").filter((line) => line.trim().length > 0);
-
-	// Parse each line
-	lines.forEach((line) => {
-		const trimmedLine = line.trim();
-
-		if (
-			trimmedLine.startsWith("TITLE:") ||
-			trimmedLine.startsWith("TITEL:")
-		) {
-			title = trimmedLine.split(":").slice(1).join(":").trim();
-		} else if (
-			trimmedLine.startsWith("DESCRIPTION:") ||
-			trimmedLine.startsWith("BESCHREIBUNG:")
-		) {
-			description = trimmedLine.split(":").slice(1).join(":").trim();
-		} else if (trimmedLine.startsWith("-")) {
-			const chapterContent = trimmedLine.substring(1).trim();
-			const [chapterTitle, ...descriptionParts] =
-				chapterContent.split(":");
-
-			if (chapterTitle) {
-				chapters.push({
-					title: chapterTitle.trim(),
-					description:
-						descriptionParts.join(":").trim() ||
-						"Keine Beschreibung verfügbar",
-					tutorialTitle: title
-				});
-			}
+		// Extract the JSON string between the curly braces
+		if (firstBraceIndex !== -1 && lastBraceIndex !== -1) {
+			return jsonString.substring(firstBraceIndex, lastBraceIndex + 1);
+		} else {
+			throw new Error("Invalid JSON: Could not find curly braces.");
 		}
-	});
+	} catch (error) {
+		console.error("JSON cleaning error:", error);
+		throw error; // Re-throw for handling in the route
+	}
+}
 
-	// Validate and provide defaults if necessary
-	return {
-		title: title || userTopic || "Neues Tutorial",
-		description: description || "Keine Beschreibung verfügbar",
-		chapters:
-			chapters.length > 0
-				? chapters
-				: [
-						{
-							title: "Einführung",
-							description: "Erste Schritte mit diesem Thema",
-							tutorialTitle:
-								title || userTopic || "Neues Tutorial"
-						}
-				  ]
-	};
+function parseTutorialContent(content: string): Tutorial {
+	try {
+		const tutorialData = JSON.parse(content);
+
+		// Validate the structure and provide defaults
+		const tutorial: Tutorial = {
+			id: uuidv4(),
+			title: tutorialData.title || "new tutorial",
+			description:
+				tutorialData.description || "No description available.",
+			locale: "en", // Get locale from the request or have a default
+			tags: tutorialData.tags || [],
+			keywords: tutorialData.keywords || [],
+			chapters: (tutorialData.chapters || []).map(
+				(chapter: Chapter, index: number): Chapter => ({
+					id: uuidv4(),
+					order: index + 1,
+					title: chapter.title || "chapter " + (index + 1),
+					description:
+						chapter.description || "No description available.",
+					content: null,
+					tags: chapter.tags || [],
+					keywords: chapter.keywords || [],
+					tutorialTitle: tutorialData.title || "New Tutorial" // Use overall title here
+				})
+			),
+			createdAt: new Date(),
+			updatedAt: new Date()
+		};
+
+		return tutorial;
+	} catch (error) {
+		console.error("Error parsing tutorial content:", error);
+		throw error; // Re-throw the error to be handled by the route handler
+	}
 }

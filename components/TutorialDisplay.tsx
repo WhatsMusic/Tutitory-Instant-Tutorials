@@ -17,7 +17,11 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         const res = await fetch("/api/generate-chapter", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tutorialTitle: tutorial.title, chapterTitle: chapter.title }),
+          body: JSON.stringify({
+            tutorialTitle: tutorial.title,
+            chapterTitle: chapter.title,
+            chapterDescription: chapter.description || "No description available", // ✅ Make sure it is never undefined.
+          }),
         })
 
         if (!res.ok) {
@@ -26,18 +30,19 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         }
 
         const generatedChapter = await res.json()
-        chapter.content = generatedChapter.content
+        chapter.content = generatedChapter.content // ✅ The new content field is set here
         setError(null)
       } catch (error) {
         console.error("Error generating chapter:", error)
         setError(error instanceof Error ? error.message : "An unexpected error occurred")
-        chapter.content = "Fehler beim Laden des Kapitels. Bitte versuchen Sie es erneut."
+        chapter.content = "Error loading chapter. Please try again."
       } finally {
         setIsLoading(false)
       }
     }
     setSelectedChapter(chapter)
   }
+
 
   const currentIndex = selectedChapter ? tutorial.chapters.findIndex((c) => c.title === selectedChapter.title) : -1
 
@@ -56,7 +61,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="w-8 h-8 animate-spin text-[#106e56]" />
-          <span className="ml-2 text-lg text-gray-600">Kapitel wird geladen...</span>
+          <span className="ml-2 text-lg text-gray-600">Chapter loading...</span>
         </div>
       ) : selectedChapter ? (
         <ChapterContent
@@ -77,7 +82,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         />
       ) : (
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800">Inhaltsverzeichnis</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">Table of contents</h2>
           <div className="grid gap-4">
             {tutorial.chapters.map((chapter, index) => (
               <div

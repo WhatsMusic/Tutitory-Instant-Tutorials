@@ -24,22 +24,22 @@ export default function TutorialForm({ setTutorial }: { setTutorial: (tutorial: 
       try {
         data = await res.json()
       } catch (jsonError) {
-        console.error("Fehler beim Parsen von JSON:", jsonError)
-        throw new Error("Serverantwort konnte nicht analysiert werden")
+        console.error("Error parsing JSON:", jsonError)
+        throw new Error("Server response could not be processed")
       }
 
       if (!res.ok) {
-        throw new Error(data.error || "Inhaltsverzeichnis konnte nicht erstellt werden")
+        throw new Error(data.error || "Failed to generate the table of contents")
       }
 
       if (!data.title || !data.description || !data.chapters || data.chapters.length === 0) {
-        throw new Error("IUngültige Tutorial-Daten empfangen")
+        throw new Error("Invalid tutorial data received")
       }
       setTutorial(data)
 
     } catch (error) {
-      console.error("Fehler beim Erstellen des Inhaltsverzeichnisses:", error)
-      setError(error instanceof Error ? error.message : "Ein unerwarteter Fehler ist aufgetreten")
+      console.error("Error generating table of contents:", error)
+      setError(error instanceof Error ? error.message : "An unexpected error occurred")
     } finally {
       setLoading(false)
     }
@@ -51,15 +51,14 @@ export default function TutorialForm({ setTutorial }: { setTutorial: (tutorial: 
         type="text"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
-        placeholder="Thema eingeben"
+        placeholder="Enter topic"
         className="w-full p-2 border rounded"
         required
       />
       <button type="submit" className="w-full bg-[#106e56] text-white p-2 rounded" disabled={loading}>
-        {loading ? "Generiere..." : "Tutorial generieren"}
+        {loading ? "Generating..." : "Generate Tutorial"}
       </button>
       {error && <p className="text-red-500">{error}</p>}
     </form>
   )
 }
-

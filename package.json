@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@huggingface/inference": "^3.0.0",
     "@next/env": "^15.1.5",
     "@vercel/analytics": "^1.4.1",
@@ -18,7 +19,8 @@
     "react-dom": "^19.0.0",
     "react-markdown": "^9.0.3",
     "react-syntax-highlighter": "^15.6.1",
-    "remark-gfm": "^4.0.0"
+    "remark-gfm": "^4.0.0",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -26,6 +28,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.5",
     "postcss": "^8",
