@@ -153,7 +153,13 @@ function cleanJsonString(jsonString: string): string {
 		return jsonString;
 	} catch (error) {
 		console.error("JSON cleaning error:", error);
-		throw error;
+		throw NextResponse.json(
+			{
+				error: "No content generated",
+				retry: true // ✅ Add retry flag
+			},
+			{ status: 500 }
+		);
 	}
 }
 
@@ -189,7 +195,13 @@ function parseChapterContent(
 		return chapter;
 	} catch (error) {
 		console.error("Error parsing chapter content:", error);
-		throw error;
+		throw NextResponse.json(
+			{
+				error: "No content generated",
+				retry: true // ✅ Add retry flag
+			},
+			{ status: 500 }
+		);
 	}
 }
 
