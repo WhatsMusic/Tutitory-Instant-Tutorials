@@ -56,9 +56,10 @@ Now generate a tutorial for the topic: "${topic}" in ${locale}.
 				}
 			],
 			provider: "hf-inference",
-			top_p: 0.8,
-			max_tokens: 2048,
-			temperature: 0.3
+			max_new_tokens: 500,
+			temperature: 0.7,
+			top_p: 0.95,
+			top_k: 50
 		});
 
 		const generatedContent = chatCompletion.choices[0]?.message?.content;

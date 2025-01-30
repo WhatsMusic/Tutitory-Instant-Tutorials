@@ -1,15 +1,6 @@
-"use client"
-import { useState } from "react"
 import TutorialForm from "../components/TutorialForm"
-import TutorialDisplay from "../components/TutorialDisplay"
-import type { Tutorial } from "../types"
 
 export default function Home() {
-  const [tutorial, setTutorial] = useState<Tutorial | null>(null)
-
-  const handleReset = () => {
-    setTutorial(null);
-  };
 
   return (
     <div className="container min-h-[70svh] w-full mx-2 sm:mx-auto p-4 sm:p-2">
@@ -24,19 +15,8 @@ export default function Home() {
         </p>
       </div>
 
-      {!tutorial ? (
-        <TutorialForm setTutorial={setTutorial} />
-      ) : (
-        <>
-          <button onClick={handleReset} className="my-4 bg-[#106e56] text-white px-4 py-2 rounded">
-            Create a New Tutorial
-          </button>
-          <TutorialDisplay tutorial={tutorial} />
-          <button onClick={handleReset} className="mt-4 bg-[#106e56] text-white px-4 py-2 rounded">
-            Create a New Tutorial
-          </button>
-        </>
-      )}
+      <TutorialForm />
+
 
       {/* SEO Text Below */}
       <div className="mt-8 bg-gray-100 p-4 sm:p-2 rounded-lg">

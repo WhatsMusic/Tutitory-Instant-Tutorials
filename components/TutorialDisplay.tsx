@@ -12,8 +12,8 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
 
   const handleChapterSelect = async (chapter: Chapter) => {
     if (!chapter.content) {
-      setIsLoading(true)
-      setError(null)
+      setIsLoading(true);
+      setError(null);
 
       try {
         const res = await fetch("/api/generate-chapter", {
@@ -22,28 +22,54 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
           body: JSON.stringify({
             tutorialTitle: tutorial.title,
             chapterTitle: chapter.title,
-            chapterDescription: chapter.description || "No description available", // ✅ Make sure it is never undefined.
+            chapterDescription: chapter.description || "No description available",
           }),
-        })
+        });
 
         if (!res.ok) {
-          const errorData = await res.json()
-          throw new Error(errorData.error || "Failed to generate chapter content")
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Failed to generate chapter content");
         }
 
-        const generatedChapter = await res.json()
-        chapter.content = generatedChapter.content // ✅ The new content field is set here
-        setError(null)
+        // ✅ Process streamed response
+        const reader = res.body?.getReader();
+        const decoder = new TextDecoder();
+        let streamedText = "";
+
+        if (reader) {
+          let firstChunkReceived = false; // ✅ Track when first chunk arrives
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            streamedText += decoder.decode(value, { stream: true });
+
+            // ✅ Stop showing loader once first chunk arrives
+            if (!firstChunkReceived) {
+              setIsLoading(false);
+              firstChunkReceived = true;
+            }
+
+            // ✅ Update UI progressively
+            chapter.content = streamedText;
+            setSelectedChapter({ ...chapter });
+          }
+        }
+
+        setError(null);
       } catch (error) {
-        console.error("Error generating chapter:", error)
-        setError(error instanceof Error ? error.message : "An unexpected error occurred")
-        chapter.content = "Error loading chapter. Please try again."
+        console.error("Error generating chapter:", error);
+        setError(error instanceof Error ? error.message : "An unexpected error occurred");
       } finally {
-        setIsLoading(false)
+        if (!chapter.content) setIsLoading(false); // ✅ Ensure loader stops if no content is received
       }
     }
-    setSelectedChapter(chapter)
-  }
+    setSelectedChapter(chapter);
+  };
+
+
+
+
 
 
   const currentIndex = selectedChapter ? tutorial.chapters.findIndex((c) => c.title === selectedChapter.title) : -1
@@ -54,11 +80,14 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
       <p className="text-lg text-gray-600 mb-8">{tutorial.description}</p>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 sm:px-2 py-3 rounded relative mb-4" role="alert">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 sm:px-2 py-3 rounded relative mb-4"
+          role="alert"
+        >
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
           <button
-            onClick={() => handleChapterSelect(selectedChapter!)}
+            onClick={() => selectedChapter && handleChapterSelect(selectedChapter)}
             className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-all"
           >
             Try Again
@@ -66,13 +95,13 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         </div>
       )}
 
-
-      {isLoading ? (
+      {isLoading && !selectedChapter?.content ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="w-8 h-8 animate-spin text-[#106e56]" />
           <span className="ml-2 text-lg text-gray-600">Chapter loading...</span>
         </div>
       ) : selectedChapter ? (
+
         <ChapterContent
           chapter={selectedChapter}
           onBack={() => setSelectedChapter(null)}

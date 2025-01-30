@@ -1,18 +1,7 @@
-import { ChapterContentProps } from '@/types'
-import { ArrowLeft, ArrowRight, ChevronLeft } from 'lucide-react'
-import React from 'react'
+import type { ChapterContentProps } from "@/types"
+import { ArrowLeft, ArrowRight, ChevronLeft } from "lucide-react"
 
-
-
-export default function ChapterNavigation({
-    onBack,
-    onNext,
-    onPrevious,
-    hasNext,
-    hasPrevious,
-}: ChapterContentProps) {
-
-
+export default function ChapterNavigation({ onBack, onNext, onPrevious, hasNext, hasPrevious }: ChapterContentProps) {
     return (
         <div>
             <div className="flex flex-col sm:flex-row items-center justify-between mb-6">

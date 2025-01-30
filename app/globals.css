@@ -15,6 +15,10 @@ body {
   color: var(--text);
 }
 
+*, :before, :after {
+    padding: 5px;
+}
+
 a {
   color: var(--primary);
   text-decoration: none;

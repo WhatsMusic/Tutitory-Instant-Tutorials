@@ -1,32 +1,59 @@
-import { Inter } from "next/font/google";
+import type { Metadata } from "next"
 import "./globals.css";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react"
 
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-export const metadata = {
+export const metadata: Metadata = {
   title: "Tutitory - Your Tutorial Generator",
   description: "Create detailed tutorials based on your topics.",
+  metadataBase: new URL('https://tutitory.com'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'en-US': '/en-US',
+      'de-DE': '/de-DE',
+    },
+  },
   openGraph: {
     title: "Tutitory - Your Tutorial Generator",
     description: "Create detailed tutorials based on your topics.",
     url: "https://tutitory.com",
     type: "website",
-    images: [
-      {
-        url: "/images/repository-open-graph-tutitory-ki-tutorial-generator.jpg",
-        width: 1200, // Standard width for Open Graph images
-        height: 630,  // Standard height for Open Graph images
-        alt: "Tutitory: Your Tutorial Generator",
-      },
-    ],
+    images: '/opengraph-image.jpg',
+    siteName: "Tutitory",
   },
+  icons: {
+    icon: [
+      { url: '/icon.png' },
+      new URL('/icon.png', 'https://tutitory.com'),
+      { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)' },
+    ],
+    apple: [
+      { url: '/apple-icon.png' },
+      { url: '/apple-icon-x3.png', sizes: '180x180', type: 'image/png' },
+    ]
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  }
 };
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+}
 
 export default function RootLayout({
   children,
@@ -35,7 +62,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`bg-gray-50 text-gray-800 ${inter.className}`}>
+      <body className={`bg-gray-50 text-gray-800`}>
         <header className="bg-[#106e56] text-white p-2">
           <div className="container mx-auto flex justify-between items-center">
             <h1 className="text-xl font-bold">

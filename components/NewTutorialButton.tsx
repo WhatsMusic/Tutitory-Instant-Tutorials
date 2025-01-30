@@ -23,7 +23,7 @@ export default function NewTutorialButton() {
                 </button>
             ) : (
                 <>
-                    <TutorialForm setTutorial={setTutorial} />
+                    <TutorialForm />
                 </>
             )}
         </div>
