@@ -69,8 +69,6 @@ Make sure the response strictly follows this JSON structure.
 
 Now generate a chapter titled "${chapterTitle}" with a description of "${chapterDescription}" for the tutorial: "${tutorialTitle}".
 `;
-
-		// **Timeout controller for 30 seconds**
 		const controller = new AbortController();
 		const timeout = setTimeout(() => controller.abort(), 30000);
 
@@ -78,12 +76,7 @@ Now generate a chapter titled "${chapterTitle}" with a description of "${chapter
 		try {
 			chatCompletion = await client.chatCompletion({
 				model: "google/gemma-2-2b-it",
-				messages: [
-					{
-						role: "user",
-						content: prompt
-					}
-				],
+				messages: [{ role: "user", content: prompt }],
 				provider: "hf-inference",
 				top_p: 0.8,
 				max_tokens: 2048,
@@ -93,9 +86,13 @@ Now generate a chapter titled "${chapterTitle}" with a description of "${chapter
 
 			clearTimeout(timeout);
 		} catch (apiError) {
-			console.error("❌ API error at Hugging Face.:", apiError);
-			throw new Error(
-				"Hugging Face API Error: Slow Response or Invalid."
+			console.error("❌ API error at Hugging Face:", apiError);
+			return NextResponse.json(
+				{
+					error: "Hugging Face API error: Response too slow or invalid.",
+					retry: true // ✅ Add a retry flag
+				},
+				{ status: 500 }
 			);
 		}
 
@@ -104,7 +101,10 @@ Now generate a chapter titled "${chapterTitle}" with a description of "${chapter
 		if (!generatedContent) {
 			console.error("❌ AI did not provide a valid answer.");
 			return NextResponse.json(
-				{ error: "No content generated" },
+				{
+					error: "No content generated",
+					retry: true // ✅ Add retry flag
+				},
 				{ status: 500 }
 			);
 		}
@@ -120,25 +120,21 @@ Now generate a chapter titled "${chapterTitle}" with a description of "${chapter
 			return NextResponse.json(parsedChapter);
 		} catch (error) {
 			console.error("❌ Error parsing JSON:", error);
-
-			// **Fallback if JSON cannot be repaired**
-			const fallbackChapter: Chapter = {
-				id: uuidv4(),
-				order: 1,
-				title: chapterTitle,
-				description: "Could not generate valid content. Please retry.",
-				content: "Fallback content due to JSON parsing issues.",
-				tags: [],
-				keywords: [],
-				tutorialTitle: tutorialTitle
-			};
-
-			return NextResponse.json(fallbackChapter);
+			return NextResponse.json(
+				{
+					error: "Failed to parse generated content",
+					retry: true // ✅ Add retry flag
+				},
+				{ status: 500 }
+			);
 		}
 	} catch (error) {
 		console.error("Error in POST route:", error);
 		return NextResponse.json(
-			{ error: "An unexpected error occurred" },
+			{
+				error: "An unexpected error occurred",
+				retry: true // ✅ Add retry flag
+			},
 			{ status: 500 }
 		);
 	}

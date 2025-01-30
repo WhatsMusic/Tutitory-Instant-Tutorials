@@ -13,6 +13,8 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const handleChapterSelect = async (chapter: Chapter) => {
     if (!chapter.content) {
       setIsLoading(true)
+      setError(null)
+
       try {
         const res = await fetch("/api/generate-chapter", {
           method: "POST",
@@ -55,8 +57,15 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 sm:px-2 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
+          <button
+            onClick={() => handleChapterSelect(selectedChapter!)}
+            className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-all"
+          >
+            Try Again
+          </button>
         </div>
       )}
+
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
@@ -79,6 +88,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
           }}
           hasNext={currentIndex < tutorial.chapters.length - 1}
           hasPrevious={currentIndex > 0}
+          onRetry={() => handleChapterSelect(selectedChapter)}
         />
       ) : (
         <div className="space-y-6">

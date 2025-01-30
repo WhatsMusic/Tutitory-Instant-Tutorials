@@ -29,4 +29,5 @@ export interface ChapterContentProps {
 	onPrevious: () => void;
 	hasNext: boolean;
 	hasPrevious: boolean;
+	onRetry: () => void;
 }
