@@ -55,6 +55,7 @@ export default function TutorialForm() {
   return (
     <form id="topicForm" onSubmit={handleSubmit} className="space-y-4">
       <input
+        id="topicFormInput"
         type="text"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
