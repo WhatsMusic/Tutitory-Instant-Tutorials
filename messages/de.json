@@ -1,0 +1,77 @@
+{
+	"Layout": {
+		"title": "Tutitory – Dein Tutorial-Generator",
+		"description": "Erstelle detaillierte Tutorials zu deinen Themen.",
+		"ogTitle": "Tutitory – Dein Tutorial-Generator",
+		"ogDescription": "Erstelle detaillierte Tutorials zu deinen Themen."
+	},
+	"Home": {
+		"title": "Tutitory – Dein KI-gestützter Tutorial-Generator",
+		"welcome": "Willkommen bei Tutitory – der intelligenten Plattform zur Erstellung von Tutorials zu jedem erdenklichen Thema! Gib ein Stichwort oder Thema ein, und unsere leistungsstarke KI generiert in Sekundenschnelle eine Schritt-für-Schritt-Anleitung, egal ob es um Technologie, Kunst, Musik oder Wissenschaft geht. Perfekt für Anfänger, Fortgeschrittene oder Experten, die einen schnellen Einstieg suchen.",
+		"tutorialPrompt": "Sie sind ein KI-Modell, das strukturierte Tutorials generiert. Folgen Sie dem exakten JSON-Format, das unten angegeben ist, ohne davon abzuweichen. Stellen Sie sicher, dass die Antwort strikt dieser JSON-Struktur folgt. Fügen Sie keine Markdown-Formatierung wie hinzu. - Fügen Sie keine Erklärungen oder zusätzlichen Text hinzu. - Die Antwort muss gültiges JSON sein und genau 5 Kapitel enthalten. - Stellen Sie sicher, dass **alle JSON-Elemente vollständig geschlossen und gültig sind**. Generieren Sie nun ein Tutorial für das Thema: ${topic} in ${locale}.",
+		"content": {
+			"whatIsTutitoryTitle": "Was ist Tutitory?",
+			"whatIsTutitory": "Tutitory ist Ihr neuer Assistent für die Erstellung und Weitergabe von Wissen schnell und effizient. Unsere Plattform nutzt die neuesten Fortschritte in der künstlichen Intelligenz, um Ihnen Tutorials und Anleitungen in klarer, verständlicher Sprache bereitzustellen.",
+			"whyUseTutitoryTitle": "Warum sollte man Tutitory verwenden?",
+			"whyUseTutitoryList": [
+				"Erstelle in Sekundenschnelle maßgeschneiderte Tutorials für dein spezielles Thema.",
+				"Nutze unsere leistungsstarke KI, um Schritt-für-Schritt-Anleitungen zu erstellen.",
+				"Greife auf gut strukturierte und leicht verständliche Inhalte zu – ideal für Anfänger und Experten gleichermaßen.",
+				"Verbessere Lernmaterialien mit einer SEO-freundlichen Struktur und klaren Anweisungen."
+			],
+			"howItWorksTitle": "Wie funktioniert es?",
+			"howItWorks": "Gib einfach ein Thema ein, wie z. B. „Python-Programmierung“, „Yoga...“ oder „KI-Analysen...“ und es kann jederzeit erweitert werden.",
+			"seoTitle": "Suchmaschinenoptimierung (SEO)",
+			"seoContent": "Alle generierten Inhalte sind SEO-freundlich und helfen dir, deine Themen effektiv zu teilen. Mit klaren Strukturen, Keyword-Optimierungen und einer XML-Sitemap unterstützt Tutitory dich dabei, deine Inhalte online sichtbar zu machen."
+		}
+	},
+	"Header": {
+		"siteTitle": "Tutitory.com"
+	},
+	"Footer": {
+		"copyright": "© 2025 Tutitory, All rights reserved.",
+		"imprint": "Impressum"
+	},
+	"ChapterNavigation": {
+		"backToTableOfContents": "Zurück zum Inhaltsverzeichnis",
+		"previousChapter": "Vorheriges Kapitel",
+		"nextChapter": "Nächstes Kapitel"
+	},
+	"ChapterContent": {
+		"loadingContent": "Lade Inhalt...",
+		"failedToGetAnswer": "Antwort nicht erhalten",
+		"unexpectedError": "Ein unerwarteter Fehler ist aufgetreten",
+		"errorTitle": "Error: ",
+		"tryAgain": "Versuch es noch einmal.",
+		"questionsAboutChapter": "Fragen zum Kapitel",
+		"placeholderYourQuestion": "Bitte gib deine Frage hier ein...",
+		"loading": "Lädt...",
+		"askQuestion": "Stelle eine Frage",
+		"answerTitle": "Die Antwort:"
+	},
+	"NewTutorialButton": {
+		"createNewTutorial": "Erstelle ein neues Tutorial"
+	},
+	"TutorialDisplay": {
+		"noDescription": "Keine Beschreibung verfügbar",
+		"failedToGenerateChapter": "Es konnte kein Kapitelinhalt generiert werden",
+		"unexpectedError": "Ein unerwarteter Fehler ist aufgetreten",
+		"errorTitle": "Error: ",
+		"tryAgain": "Versuch es noch einmal.",
+		"chapterLoading": "Kapitel wird geladen...",
+		"tableOfContents": "Inhaltsverzeichnis"
+	},
+	"TutorialForm": {
+		"placeholderTopic": "Thema eingeben",
+		"btnGenerateTutorial": "Tutorial erstellen",
+		"generating": "Erstelle...",
+		"serverResponseError": "Die Serverantwort konnte nicht verarbeitet werden",
+		"failedGenerateTOC": "Das Inhaltsverzeichnis konnte nicht erstellt werden.",
+		"invalidTutorialData": "Ungültige Tutorial-Daten empfangen",
+		"unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+	},
+	"LocaleSwitcher": {
+		"label": "Sprache",
+		"locale": "{locale}"
+	}
+}

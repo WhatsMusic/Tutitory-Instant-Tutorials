@@ -31,3 +31,5 @@ export interface ChapterContentProps {
 	hasPrevious: boolean;
 	onRetry: () => void;
 }
+
+export type LocaleType = "en" | "de";

@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
 import { HfInference } from "@huggingface/inference";
+import { langMap } from "@/app/utils/helpers";
 
 // Initialize the Hugging Face client
 const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(req: Request) {
 	try {
-		const { tutorialTitle, chapterTitle, question } = await req.json();
+		const { locale, tutorialTitle, chapterTitle, question } =
+			await req.json();
+
+		const lang = langMap[locale as keyof typeof langMap] || "Unknown";
+
 		console.log(tutorialTitle, chapterTitle, question);
-		const prompt = `You are Tutitory, an AI that writes German tutorials and guides.
+		const prompt = `You are Tutitory, an AI that writes tutorials and guides in ${lang} language.
     Answer the following question about the chapter "${chapterTitle}" from the tutorial "${tutorialTitle}":
     ${question}
     Provide a detailed and understandable answer. Format your response using Markdown for better readability.

@@ -2,12 +2,18 @@ import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import type { Chapter, Tutorial } from "../../../types";
 import { HfInference } from "@huggingface/inference";
+import { langMap } from "@/app/utils/helpers";
 
 const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(req: Request) {
 	try {
-		const { topic, locale = "en" } = await req.json();
+		const {
+			topic,
+			locale
+		}: { topic: string; locale: keyof typeof langMap } = await req.json();
+
+		const lang = langMap[locale] || "Unknown";
 
 		if (!process.env.HUGGINGFACE_API_KEY) {
 			throw new Error("❌ Error: HUGGINGFACE_API_KEY is not set.");
@@ -16,23 +22,23 @@ export async function POST(req: Request) {
 		console.log("✅ Hugging Face API key found, starting AI generation...");
 
 		const prompt = `
-You are an AI that generates structured tutorials. Follow the exact JSON format provided below without deviation.
+You are an AI that generates structured tutorials in ${lang} language. Follow the exact JSON format provided below without deviation.
 
 {
-  "title": "Title of the tutorial",
-  "description": "Brief summary of the tutorial",
+  "title": "Title of the tutorial in ${lang} language",
+  "description": "Brief summary of the tutorial in ${lang} language",
   "tags": ["tag1", "tag2"],
   "keywords": ["keyword1", "keyword2"],
   "chapters": [
     {
-      "title": "Chapter 1 Title",
-      "description": "Brief summary of chapter 1",
+      "title": "Chapter 1 Title in ${lang} language",
+      "description": "Brief summary of chapter 1 in ${lang} language",
       "tags": ["tag1", "tag2"],
       "keywords": ["keyword1", "keyword2"]
     },
     {
-      "title": "Chapter 2 Title",
-      "description": "Brief summary of chapter 2",
+      "title": "Chapter 2 Title in ${lang} language",
+      "description": "Brief summary of chapter 2 in ${lang} language",
       "tags": ["tag1", "tag2"],
       "keywords": ["keyword1", "keyword2"]
     }
@@ -45,7 +51,7 @@ Make sure the response strictly follows this JSON structure.
 - The response must be valid JSON and contain exactly 5 chapters.
 - Ensure that **all JSON elements are fully closed and valid**.
 
-Now generate a tutorial for the topic: "${topic}" in ${locale}.
+Now generate a tutorial for the topic: "${topic}" in ${lang} language.
 `;
 		const chatCompletion = await client.chatCompletion({
 			model: "google/gemma-2-2b-it",

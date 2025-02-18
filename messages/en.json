@@ -1,0 +1,78 @@
+{
+	"Layout": {
+		"title": "Tutitory – Your Tutorial Generator",
+		"description": "Create detailed tutorials based on your topics.",
+		"ogTitle": "Tutitory – Your Tutorial Generator",
+		"ogDescription": "Create detailed tutorials based on your topics."
+	},
+	"Home": {
+		"title": "Tutitory – Your AI-Powered Tutorial Generator",
+		"welcome": "Welcome to Tutitory – the smart platform for creating tutorials on any topic you can think of! Enter a keyword or topic, and our powerful AI will generate step-by-step instructions in seconds, whether it's about technology, art, music, or science. Perfect for beginners, advanced learners, or experts looking for a quick reference.",
+		"content": {
+			"whatIsTutitoryTitle": "What is Tutitory?",
+			"whatIsTutitory": "Tutitory is your new assistant for creating and sharing knowledge quickly and efficiently. Our platform uses the latest advances in artificial intelligence to provide you with tutorials and instructions in clear, understandable language.",
+			"whyUseTutitoryTitle": "Why Use Tutitory?",
+			"whyUseTutitoryList": [
+				"Create customized tutorials for your specific topic in seconds.",
+				"Utilize our powerful AI to generate step-by-step guides.",
+				"Access well-structured and easy-to-understand content – ideal for beginners and experts alike.",
+				"Enhance learning materials with SEO-friendly structure and clear instructions."
+			],
+			"howItWorksTitle": "How Does It Work?",
+			"howItWorks": "Simply enter a topic, such as \"Python Programming\", \"Yoga...\" Or AI analyzes ... expanded any time.",
+			"seoTitle": "Search Engine Optimization (SEO)",
+			"seoContent": "All generated content is SEO-friendly, helping you effectively share your topics. With clear structures, keyword optimizations, and an XML sitemap, Tutitory supports you in making your content visible online."
+		}
+	},
+
+	"Header": {
+		"siteTitle": "Tutitory.com"
+	},
+
+	"Footer": {
+		"copyright": "© 2025 Tutitory, All rights reserved.",
+		"imprint": "Imprint"
+	},
+	"ChapterNavigation": {
+		"backToTableOfContents": "Back to Table of Contents",
+		"previousChapter": "Previous Chapter",
+		"nextChapter": "Next Chapter"
+	},
+	"ChapterContent": {
+		"loadingContent": "Loading content...",
+		"failedToGetAnswer": "Failed to get answer",
+		"unexpectedError": "An unexpected error occurred",
+		"errorTitle": "Error: ",
+		"tryAgain": "Try Again",
+		"questionsAboutChapter": "Questions about the chapter",
+		"placeholderYourQuestion": "Please type your question here...",
+		"loading": "Loading...",
+		"askQuestion": "Ask a question",
+		"answerTitle": "The answer:"
+	},
+	"NewTutorialButton": {
+		"createNewTutorial": "Create a New Tutorial"
+	},
+	"TutorialDisplay": {
+		"noDescription": "No description available",
+		"failedToGenerateChapter": "Failed to generate chapter content",
+		"unexpectedError": "An unexpected error occurred",
+		"errorTitle": "Error: ",
+		"tryAgain": "Try Again",
+		"chapterLoading": "Chapter loading...",
+		"tableOfContents": "Table of contents"
+	},
+	"TutorialForm": {
+		"placeholderTopic": "Enter topic",
+		"btnGenerateTutorial": "Generate Tutorial",
+		"generating": "Generating...",
+		"serverResponseError": "Server response could not be processed",
+		"failedGenerateTOC": "Failed to generate the table of contents",
+		"invalidTutorialData": "Invalid tutorial data received",
+		"unexpectedError": "An unexpected error occurred"
+	},
+	"LocaleSwitcher": {
+		"label": "Language",
+		"locale": "{locale}"
+	}
+}

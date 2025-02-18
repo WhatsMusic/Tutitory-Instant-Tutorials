@@ -1,22 +1,21 @@
 import { NextResponse } from "next/server";
 import { HfInference } from "@huggingface/inference";
+import { langMap } from "@/app/utils/helpers";
 
 const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(req: Request) {
 	try {
-		const { tutorialTitle, chapterTitle, chapterDescription } =
+		const { locale, tutorialTitle, chapterTitle, chapterDescription } =
 			await req.json();
 
 		if (!process.env.HUGGINGFACE_API_KEY) {
 			throw new Error("❌ Error: HUGGINGFACE_API_KEY is not set.");
 		}
 
-		console.log(
-			"✅ Hugging Face API key found, starting chapter generation..."
-		);
+		const lang = langMap[locale as keyof typeof langMap] || "Unknown";
 
-		const prompt = `You will write a tutorial chapter on the topic “${chapterTitle}” – “${chapterDescription}” as a single chapter within the tutorial titled “${tutorialTitle}”.
+		const prompt = `You will write a tutorial chapter on the topic “${chapterTitle}” – “${chapterDescription}” as a single chapter within the tutorial titled “${tutorialTitle}” in ${lang} language.
 Please create the chapter with at least 5 detailed sections related to the topic. Consider the following scheme as a guide: 
 
 ## **${chapterTitle}**
