@@ -7,7 +7,7 @@ export default function HomePage() {
     const t = useTranslations("Home");
 
     return (
-        <div className="container min-h-[70svh] w-full mx-2 sm:mx-auto p-4 sm:p-2">
+        <div className="container min-h-[70svh] w-full mx-0 p-0 sm:mx-auto">
             <h1 className="text-3xl font-bold mb-4 text-center">{t("title")}</h1>
 
             {/* SEO-Optimized Introduction Text */}
