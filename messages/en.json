@@ -74,5 +74,21 @@
 	"LocaleSwitcher": {
 		"label": "Language",
 		"locale": "{locale}"
+	},
+	"Imprint": {
+		"title": "Imprint",
+		"information": "Information according to § 5 TMG:",
+		"name": "Robert Schulz",
+		"street": "Leipziger Str. 18",
+		"plz": "04720 Döbeln",
+		"email": "info@tutitory.com",
+		"disclaimer": "Disclaimer:",
+		"disclaimerText": "The content of this website has been carefully prepared and reviewed. However, we cannot guarantee the accuracy, completeness or quality of the information provided.",
+		"liability": "Liability:",
+		"liabilityText": "We are not liable for any damages or losses arising from the use of this website.",
+		"copyright": "Copyright:",
+		"copyrightText": "All content on this website is protected by copyright. Any use of the content without our prior written consent is prohibited.",
+		"dataProtection": "Data Protection:",
+		"dataProtectionText": "We take the protection of your personal data seriously. Please see our privacy policy for more information."
 	}
 }

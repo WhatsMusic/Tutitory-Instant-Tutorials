@@ -73,5 +73,21 @@
 	"LocaleSwitcher": {
 		"label": "Sprache",
 		"locale": "{locale}"
+	},
+	"Imprint": {
+		"title": "Imprint",
+		"information": "Information according to § 5 TMG:",
+		"name": "Robert Schulz",
+		"street": "Leipziger Str. 18",
+		"plz": "04720 Döbeln",
+		"email": "info@tutitory.com",
+		"disclaimer": "Haftungsausschluss:",
+		"disclaimerText": "Der Inhalt dieser Website wurde sorgfältig erstellt und geprüft. Wir können jedoch keine Gewähr für die Richtigkeit, Vollständigkeit oder Qualität der bereitgestellten Informationen übernehmen.",
+		"liability": "Haftung:",
+		"liabilityText": "Wir haften nicht für Schäden oder Verluste, die durch die Nutzung dieser Website entstehen.",
+		"copyright": "Urheberrecht:",
+		"copyrightText": "Alle Inhalte dieser Website sind urheberrechtlich geschützt. Jegliche Nutzung der Inhalte ohne unsere vorherige schriftliche Zustimmung ist untersagt.",
+		"dataProtection": "Datenschutz:",
+		"dataProtectionText": "Wir nehmen den Schutz deiner persönlichen Daten ernst. Weitere Informationen findest du in unserer Datenschutzerklärung."
 	}
 }
