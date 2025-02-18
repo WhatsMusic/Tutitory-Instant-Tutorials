@@ -2,19 +2,22 @@
 import React from "react";
 import TutorialForm from "@/components/TutorialForm";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function HomePage() {
     const t = useTranslations("Home");
 
     return (
         <div className="container min-h-[70svh] w-full mx-0 p-0 sm:mx-auto">
-            <h1 className="text-3xl font-bold mb-4 text-center">{t("title")}</h1>
+            <h1 className="text-3xl font-bold my-4 text-center">{t("title")}</h1>
 
             {/* SEO-Optimized Introduction Text */}
-            <div className="mb-6">
-                <p className="text-lg text-gray-700">{t("welcome")}</p>
+            <div className="md:flex md:flex-row flex-col justify-normal items-center">
+                <Image src="/logo-tutitory-2.png" width="300" height="300" alt="Image" className="w-2/3 md:w-1/6" />
+                <div className="md:pl-4">
+                    <p className="text-lg text-gray-700">{t("welcome")}</p>
+                </div>
             </div>
-
             <TutorialForm />
 
             {/* SEO Text Below */}
