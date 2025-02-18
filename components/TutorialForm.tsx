@@ -53,7 +53,7 @@ export default function TutorialForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form id="topicForm" onSubmit={handleSubmit} className="space-y-4">
       <input
         type="text"
         value={topic}
