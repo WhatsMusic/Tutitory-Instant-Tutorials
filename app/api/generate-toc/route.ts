@@ -4,6 +4,27 @@ import { cleanJsonString, parseTutorialContent } from "@/app/utils/helpers";
 
 const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
+async function fetchFeaturedImage(query: string): Promise<string | null> {
+	const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(
+		query
+	)}&per_page=1`;
+	const res = await fetch(url, {
+		headers: {
+			Authorization: process.env.PEXELS_API_KEY!
+		}
+	});
+	if (!res.ok) {
+		console.error("Error fetching image from Pexels:", res.statusText);
+		return null;
+	}
+	const data = await res.json();
+	if (data.photos && data.photos.length > 0) {
+		// Hier verwenden wir z. B. das "large" Bild
+		return data.photos[0].src.large;
+	}
+	return null;
+}
+
 interface Prompt {
 	toc: (topic: string) => string;
 }
@@ -128,6 +149,17 @@ export async function POST(req: NextRequest) {
 		try {
 			const cleanedContent = cleanJsonString(generatedContent); // JSON String bereinigen
 			const parsedTutorial = parseTutorialContent(cleanedContent);
+			// Für jedes Kapitel: Suche anhand der Keywords (oder als Fallback den Kapitel-Titel)
+			await Promise.all(
+				parsedTutorial.chapters.map(async (chapter) => {
+					const query =
+						chapter.keywords && chapter.keywords.length > 0
+							? chapter.keywords.join(" ")
+							: chapter.title;
+					const imageUrl = await fetchFeaturedImage(query);
+					chapter.featuredImage = imageUrl?.toString() ?? "";
+				})
+			);
 			return NextResponse.json(parsedTutorial);
 		} catch (error) {
 			console.error("Error parsing/cleaning JSON:", error);

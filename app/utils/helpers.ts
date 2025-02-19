@@ -35,7 +35,7 @@ export function parseTutorialContent(content: string): Tutorial {
 			title: tutorialData.title || "new tutorial",
 			description:
 				tutorialData.description || "No description available.",
-			locale: "en", // Hier könntest du auch den userLocale verwenden, wenn gewünscht.
+			locale: "en", // Hier kannst du auch den tatsächlichen Locale-Wert einsetzen.
 			tags: tutorialData.tags || [],
 			keywords: tutorialData.keywords || [],
 			chapters: (tutorialData.chapters || []).map(
@@ -45,10 +45,12 @@ export function parseTutorialContent(content: string): Tutorial {
 					title: chapter.title || "chapter " + (index + 1),
 					description:
 						chapter.description || "No description available.",
-					content: null,
+					// Neue Eigenschaft für das Featured Image
+					featuredImage: chapter.featuredImage as string | undefined,
 					tags: chapter.tags || [],
 					keywords: chapter.keywords || [],
-					tutorialTitle: tutorialData.title || "New Tutorial"
+					tutorialTitle: tutorialData.title || "New Tutorial",
+					content: null
 				})
 			),
 			createdAt: new Date(),

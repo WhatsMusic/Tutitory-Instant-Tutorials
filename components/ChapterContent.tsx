@@ -5,6 +5,7 @@ import type { ChapterContentProps } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ChapterNavigation from "./ChapterNavigation";
+import Image from "next/image";
 
 export default function ChapterContent({
     chapter,
@@ -15,7 +16,7 @@ export default function ChapterContent({
     hasPrevious,
     onRetry
 }: ChapterContentProps) {
-    const t = useTranslations("ChapterContent"); // <-- Namespace: "ChapterContent"
+    const t = useTranslations("ChapterContent");
     const locale = useLocale();
 
     const [question, setQuestion] = useState("");
@@ -30,7 +31,6 @@ export default function ChapterContent({
 
     useEffect(() => {
         setDisplayedContent(chapter.content || t("loadingContent"));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chapter.content]);
 
     const handleAskQuestion = async () => {
@@ -92,7 +92,20 @@ export default function ChapterContent({
                     </div>
                 ) : (
                     <>
-                        <div className="prose prose-lg max-w-none">
+                        {/* Optional: Anzeige des Featured Image */}
+                        {chapter.featuredImage && (
+                            <div className="mt-8 md:float-left md:w-1/3 md:mr-6 lg:w-1/4">
+                                <Image
+                                    src={chapter.featuredImage}
+                                    width="400"
+                                    height="400"
+                                    alt={chapter.title}
+                                    className="w-full h-auto rounded-lg"
+                                />
+                            </div>
+                        )}
+
+                        <div className="prose prose-lg max-w-none mt-0 pt-0">
                             <MarkdownRenderer
                                 key={displayedContent.length}
                                 content={displayedContent}

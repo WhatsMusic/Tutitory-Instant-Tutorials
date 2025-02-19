@@ -17,6 +17,7 @@ export interface Chapter {
 	title: string;
 	description: string;
 	content: string | null; // Explicitly allow null
+	featuredImage?: string;
 	tags: string[];
 	keywords: string[];
 	tutorialTitle: string;
