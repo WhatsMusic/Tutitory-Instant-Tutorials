@@ -1,11 +1,12 @@
 import { useState } from "react";
 import type { Tutorial, Chapter } from "@/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import ChapterContent from "./ChapterContent";
 import { Loader2 } from "lucide-react";
 
 export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const t = useTranslations("TutorialDisplay"); // <-- Namespace: "TutorialDisplay"
+  const locale = useLocale();
 
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +19,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
 
 
       try {
-        const res = await fetch("/api/generate-chapter", {
+        const res = await fetch(`/api/generate-chapter?locale=${locale}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -75,7 +76,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
 
   return (
     <div className="w-full mx-auto p-6 sm:p-2 bg-white rounded-lg shadow-sm">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">{tutorial.title}</h1>
+      <h1 className="text-2xl font-bold mb-4">{tutorial.title}</h1>
       <p className="text-lg text-gray-600 mb-8">{tutorial.description}</p>
 
       {error && (
@@ -124,7 +125,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
         />
       ) : (
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold ">
             {t("tableOfContents")}
           </h2>
           <div className="grid gap-4">
@@ -135,7 +136,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
                            transition-colors cursor-pointer"
                 onClick={() => handleChapterSelect(chapter)}
               >
-                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                <h3 className="text-xl font-medium mb-2">
                   {chapter.title}
                 </h3>
                 <p className="text-gray-600">{chapter.description}</p>

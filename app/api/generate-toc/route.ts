@@ -1,44 +1,34 @@
-import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
-import type { Chapter, Tutorial } from "../../../types";
+import { NextRequest, NextResponse } from "next/server";
 import { HfInference } from "@huggingface/inference";
-import { langMap } from "@/app/utils/helpers";
+import { cleanJsonString, parseTutorialContent } from "@/app/utils/helpers";
 
 const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
-export async function POST(req: Request) {
-	try {
-		const {
-			topic,
-			locale
-		}: { topic: string; locale: keyof typeof langMap } = await req.json();
+interface Prompt {
+	toc: (topic: string) => string;
+}
 
-		const lang = langMap[locale] || "Unknown";
-
-		if (!process.env.HUGGINGFACE_API_KEY) {
-			throw new Error("❌ Error: HUGGINGFACE_API_KEY is not set.");
-		}
-
-		console.log("✅ Hugging Face API key found, starting AI generation...");
-
-		const prompt = `
-You are an AI that generates structured tutorials in ${lang} language. Follow the exact JSON format provided below without deviation.
+const prompts: { [key: string]: Prompt } = {
+	en: {
+		toc: (topic: string) =>
+			`
+You are an AI that generates structured tutorials. Follow the exact JSON format provided below without deviation.
 
 {
-  "title": "Title of the tutorial in ${lang} language",
-  "description": "Brief summary of the tutorial in ${lang} language",
+  "title": "Title of the tutorial",
+  "description": "Brief summary of the tutorial",
   "tags": ["tag1", "tag2"],
   "keywords": ["keyword1", "keyword2"],
   "chapters": [
     {
-      "title": "Chapter 1 Title in ${lang} language",
-      "description": "Brief summary of chapter 1 in ${lang} language",
+      "title": "Chapter 1 Title",
+      "description": "Brief summary of chapter 1",
       "tags": ["tag1", "tag2"],
       "keywords": ["keyword1", "keyword2"]
     },
     {
-      "title": "Chapter 2 Title in ${lang} language",
-      "description": "Brief summary of chapter 2 in ${lang} language",
+      "title": "Chapter 2 Title",
+      "description": "Brief summary of chapter 2",
       "tags": ["tag1", "tag2"],
       "keywords": ["keyword1", "keyword2"]
     }
@@ -51,14 +41,72 @@ Make sure the response strictly follows this JSON structure.
 - The response must be valid JSON and contain exactly 5 chapters.
 - Ensure that **all JSON elements are fully closed and valid**.
 
-Now generate a tutorial for the topic: "${topic}" in ${lang} language.
-`;
+Now generate a tutorial for the topic: "${topic}".
+`
+	},
+	de: {
+		toc: (topic: string) =>
+			`Du bist eine KI, die strukturierte Tutorials generiert. Halte dich genau an das unten angegebene JSON-Format, ohne davon abzuweichen.
+{
+"title": "Titel des Tutorials",
+"description": "Kurze Zusammenfassung des Tutorials",
+"tags": ["tag1", "tag2"],
+"keywords": ["keyword1", "keyword2"],
+"chapters": [
+  {
+    "title": "Titel von Kapitel 1",
+    "description": "Kurze Zusammenfassung von Kapitel 1",
+    "tags": ["tag1", "tag2"],
+    "keywords": ["keyword1", "keyword2"]
+  },
+  {
+    "title": "Titel von Kapitel 2",
+    "description": "Kurze Zusammenfassung von Kapitel 2",
+    "tags": ["tag1", "tag2"],
+    "keywords": ["keyword1", "keyword2"]
+  }
+]
+}
+Stelle sicher, dass die Antwort genau dieser JSON-Struktur folgt.
+- Füge keine Markdown-Formatierung wie json hinzu.
+- Füge keine Erklärungen oder zusätzlichen Text hinzu.
+- Die Antwort muss gültiges JSON sein und genau 5 Kapitel enthalten.
+- Stelle sicher, dass **alle JSON-Elemente vollständig geschlossen und gültig sind**.
+Erstelle nun ein Tutorial für das Thema: "${topic}".`
+	}
+};
+
+export async function POST(req: NextRequest) {
+	const { topic } = await req.json();
+
+	// Locale aus den Query-Parametern auslesen und als Fallback auch req.nextUrl.locale nutzen:
+	const url = req.nextUrl;
+	const localeFromQuery = url.searchParams.get("locale");
+	const userLocale = localeFromQuery || url.locale || "en";
+
+	// Den passenden, lokaliserten Prompt auswählen
+	const prompt = prompts[userLocale]?.toc(topic) || prompts.en.toc(topic);
+
+	try {
+		if (!process.env.HUGGINGFACE_API_KEY) {
+			throw new Error("❌ Error: HUGGINGFACE_API_KEY is not set.");
+		}
+
+		if (!prompt) {
+			throw new Error("❌ Error: Prompt not found.");
+		}
+
+		console.log(
+			"✅ Hugging Face API key found, starting AI generation...",
+			{ prompt }
+		);
+
 		const chatCompletion = await client.chatCompletion({
 			model: "google/gemma-2-2b-it",
 			messages: [
 				{
 					role: "user",
-					content: prompt
+					content: JSON.stringify({ prompt })
 				}
 			],
 			provider: "hf-inference",
@@ -78,7 +126,7 @@ Now generate a tutorial for the topic: "${topic}" in ${lang} language.
 		}
 
 		try {
-			const cleanedContent = cleanJsonString(generatedContent); // Clean the JSON string
+			const cleanedContent = cleanJsonString(generatedContent); // JSON String bereinigen
 			const parsedTutorial = parseTutorialContent(cleanedContent);
 			return NextResponse.json(parsedTutorial);
 		} catch (error) {
@@ -94,60 +142,5 @@ Now generate a tutorial for the topic: "${topic}" in ${lang} language.
 			{ error: "An unexpected error occurred" },
 			{ status: 500 }
 		);
-	}
-}
-
-function cleanJsonString(jsonString: string): string {
-	try {
-		// Find the first and last occurrences of curly braces
-		const firstBraceIndex = jsonString.indexOf("{");
-		const lastBraceIndex = jsonString.lastIndexOf("}");
-
-		// Extract the JSON string between the curly braces
-		if (firstBraceIndex !== -1 && lastBraceIndex !== -1) {
-			return jsonString.substring(firstBraceIndex, lastBraceIndex + 1);
-		} else {
-			throw new Error("Invalid JSON: Could not find curly braces.");
-		}
-	} catch (error) {
-		console.error("JSON cleaning error:", error);
-		throw error; // Re-throw for handling in the route
-	}
-}
-
-function parseTutorialContent(content: string): Tutorial {
-	try {
-		const tutorialData = JSON.parse(content);
-
-		// Validate the structure and provide defaults
-		const tutorial: Tutorial = {
-			id: uuidv4(),
-			title: tutorialData.title || "new tutorial",
-			description:
-				tutorialData.description || "No description available.",
-			locale: "en", // Get locale from the request or have a default
-			tags: tutorialData.tags || [],
-			keywords: tutorialData.keywords || [],
-			chapters: (tutorialData.chapters || []).map(
-				(chapter: Chapter, index: number): Chapter => ({
-					id: uuidv4(),
-					order: index + 1,
-					title: chapter.title || "chapter " + (index + 1),
-					description:
-						chapter.description || "No description available.",
-					content: null,
-					tags: chapter.tags || [],
-					keywords: chapter.keywords || [],
-					tutorialTitle: tutorialData.title || "New Tutorial" // Use overall title here
-				})
-			),
-			createdAt: new Date(),
-			updatedAt: new Date()
-		};
-
-		return tutorial;
-	} catch (error) {
-		console.error("Error parsing tutorial content:", error);
-		throw error; // Re-throw the error to be handled by the route handler
 	}
 }

@@ -1,16 +1,15 @@
+// app/components/EnhancedLanguageSwitcher.tsx
 "use client";
 
 import { useState, useTransition } from "react";
 import { useLocale } from "next-intl";
-
-import { ChevronDown } from "lucide-react"; // example icons from lucide-react
-import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
+import clsx from "clsx";
 
 const AVAILABLE_LOCALES = [
     { code: "en", label: "English", icon: "🇬🇧" },
     { code: "de", label: "Deutsch", icon: "🇩🇪" }
-    // add more if needed
 ];
 
 export default function EnhancedLanguageSwitcher() {
@@ -20,7 +19,6 @@ export default function EnhancedLanguageSwitcher() {
     const router = useRouter();
 
     function switchLocale(nextLocale: string) {
-        // Start transition to avoid blocking UI
         startTransition(() => {
             router.push(`/${nextLocale}`);
             setIsOpen(false);
@@ -43,7 +41,6 @@ export default function EnhancedLanguageSwitcher() {
                     isPending && "opacity-70 cursor-wait"
                 )}
             >
-                {/* WICHTIG: w-5 h-5 + flex-shrink-0 verhindert ungewolltes Skalie­ren */}
                 <span className="flex items-center gap-1 whitespace-nowrap">
                     {currentLocaleData?.icon} {currentLocaleData?.label}
                 </span>
@@ -51,10 +48,7 @@ export default function EnhancedLanguageSwitcher() {
             </button>
 
             {isOpen && (
-                <div
-                    className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg 
-                     ring-1 ring-black ring-opacity-5 z-50"
-                >
+                <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                     <ul className="py-1">
                         {AVAILABLE_LOCALES.map(({ code, label, icon }) => (
                             <li key={code}>

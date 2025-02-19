@@ -19,6 +19,11 @@ body {
     padding: 5px;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary);
+  font-weight: bold;
+}
+
 a {
   color: var(--primary);
   text-decoration: none;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { ChapterContentProps } from "@/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ChapterNavigation from "./ChapterNavigation";
 
@@ -16,6 +16,7 @@ export default function ChapterContent({
     onRetry
 }: ChapterContentProps) {
     const t = useTranslations("ChapterContent"); // <-- Namespace: "ChapterContent"
+    const locale = useLocale();
 
     const [question, setQuestion] = useState("");
     const [answer, setAnswer] = useState("");
@@ -38,7 +39,7 @@ export default function ChapterContent({
         setIsLoading(true);
         setError(null);
         try {
-            const res = await fetch("/api/ask-question", {
+            const res = await fetch(`/api/ask-question?locale=${locale}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -1,13 +1,24 @@
+// app/components/TutorialForm.tsx
 "use client";
 
 import { useState } from "react";
-import type { Tutorial } from "@/types";
 import { useTranslations } from "next-intl";
 import TutorialDisplay from "./TutorialDisplay";
+import { Chapter } from "@/types";
+import { useLocale } from 'next-intl';
+
+
+interface Tutorial {
+  title: string;
+  description: string;
+  chapters: Chapter[];
+  // Add other properties as needed
+}
+
 
 export default function TutorialForm() {
-  const t = useTranslations("TutorialForm"); // <-- Namespace: "TutorialForm"
-
+  const t = useTranslations("TutorialForm");
+  const locale = useLocale();
 
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,8 +30,9 @@ export default function TutorialForm() {
     setLoading(true);
     setError(null);
 
+
     try {
-      const res = await fetch("/api/generate-toc", {
+      const res = await fetch(`/api/generate-toc?locale=${locale}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic })
@@ -38,15 +50,14 @@ export default function TutorialForm() {
         throw new Error(data.error || t("failedGenerateTOC"));
       }
 
+      // Hier wird angenommen, dass die API alle benötigten Felder liefert.
       if (!data.title || !data.description || !data.chapters || data.chapters.length === 0) {
         throw new Error(t("invalidTutorialData"));
       }
       setTutorial(data);
     } catch (error) {
       console.error("Error generating table of contents:", error);
-      setError(
-        error instanceof Error ? error.message : t("unexpectedError")
-      );
+      setError(error instanceof Error ? error.message : t("unexpectedError"));
     } finally {
       setLoading(false);
     }
@@ -59,7 +70,7 @@ export default function TutorialForm() {
         type="text"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
-        placeholder={t('placeholderTopic')}
+        placeholder={t("placeholderTopic")}
         className="w-full p-2 border rounded"
         required
       />

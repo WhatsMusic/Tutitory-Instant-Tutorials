@@ -1,14 +1,14 @@
 // types.ts
 export interface Tutorial {
-	id: string;
 	title: string;
 	description: string;
-	locale: string;
-	tags: string[];
-	keywords: string[];
 	chapters: Chapter[];
-	createdAt: Date;
-	updatedAt: Date;
+	id?: string; // Make id optional
+	locale?: string; // Make locale optional
+	tags?: string[]; // Make tags optional
+	keywords?: string[]; // Make keywords optional
+	createdAt?: Date; // Make createdAt optional
+	updatedAt?: Date; // Make updatedAt optional
 }
 
 export interface Chapter {

@@ -1,65 +1,82 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { HfInference } from "@huggingface/inference";
-import { langMap } from "@/app/utils/helpers";
 
-// Initialize the Hugging Face client
+// Initialisiere den Hugging Face Client
 const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
-export async function POST(req: Request) {
+// Definiere die Prompts für beide Sprachen
+const prompts: {
+	[key: string]: (
+		tutorialTitle: string,
+		chapterTitle: string,
+		question: string
+	) => string;
+} = {
+	en: (tutorialTitle, chapterTitle, question) =>
+		`You are Tutitory, an AI that writes tutorials and guides in English.
+Answer the following question about the chapter "${chapterTitle}" from the tutorial "${tutorialTitle}":
+${question}
+Provide a detailed and understandable answer in Markdown for better readability.
+Start your answer immediately without repeating these instructions.`,
+	de: (tutorialTitle, chapterTitle, question) =>
+		`Du bist Tutitory, eine KI, die Tutorials und Anleitungen auf Deutsch erstellt.
+Beantworte die folgende Frage zum Kapitel "${chapterTitle}" aus dem Tutorial "${tutorialTitle}":
+${question}
+Gib eine detaillierte und verständliche Antwort in Markdown für bessere Lesbarkeit.
+Start your answer immediately without repeating these instructions.`
+};
+
+export async function POST(req: NextRequest) {
 	try {
-		const { locale, tutorialTitle, chapterTitle, question } =
-			await req.json();
+		// Lese die Parameter aus dem Request-Body
+		const { tutorialTitle, chapterTitle, question } = await req.json();
 
-		const lang = langMap[locale as keyof typeof langMap] || "Unknown";
+		// Extrahiere den Locale-Wert aus der URL
+		const url = req.nextUrl;
+		const localeFromQuery = url.searchParams.get("locale");
+		const userLocale = localeFromQuery || url.locale || "en";
 
-		console.log(tutorialTitle, chapterTitle, question);
-		const prompt = `You are Tutitory, an AI that writes tutorials and guides in ${lang} language.
-    Answer the following question about the chapter "${chapterTitle}" from the tutorial "${tutorialTitle}":
-    ${question}
-    Provide a detailed and understandable answer. Format your response using Markdown for better readability.
-    Start your answer immediately, without repeating these instructions.`;
+		// Wähle das passende Prompt basierend auf dem userLocale, Fallback: englisches Prompt
+		const promptGenerator =
+			prompts[userLocale as keyof typeof prompts] || prompts.en;
+		const prompt = promptGenerator(tutorialTitle, chapterTitle, question);
 
-		const textGeneration = await client.textGeneration({
-			model: "google/gemma-2-2b-it",
-			inputs: prompt,
-			parameters: {
-				max_new_tokens: 1024,
-				min_new_tokens: 100,
-				do_sample: true,
-				temperature: 0.2,
-				top_p: 0.9
-			}
+		// Sammle den generierten Text aus dem Streaming-Response
+		let accumulatedText = "";
+		const responseStream = client.chatCompletionStream({
+			model: "mistralai/Mistral-7B-Instruct-v0.3", // Modell, das Chat-Streaming unterstützt
+			messages: [
+				{
+					role: "user",
+					content: prompt
+				}
+			],
+			provider: "together",
+			max_new_tokens: 2048,
+			temperature: 0.3,
+			top_p: 0.95,
+			top_k: 50
 		});
 
-		let answer = textGeneration.generated_text.trim();
-
-		// Remove the prompt if it's included in the response
-		const promptEndIndex = answer.indexOf(
-			"Start your answer immediately, without repeating these instructions."
-		);
-		if (promptEndIndex !== -1) {
-			answer = answer
-				.substring(
-					promptEndIndex +
-						"Start your answer immediately, without repeating these instructions."
-							.length
-				)
-				.trim();
+		for await (const chunk of responseStream) {
+			if (chunk.choices && chunk.choices.length > 0) {
+				const textChunk = chunk.choices[0].delta?.content || "";
+				accumulatedText += textChunk;
+			}
 		}
+
+		const answer = accumulatedText.trim();
 
 		if (!answer || answer.length === 0) {
 			throw new Error("Generated answer is empty or invalid");
 		}
 
+		// Rückgabe als JSON, damit der Client validen JSON-Code erhält
 		return NextResponse.json({ answer });
 	} catch (error) {
-		console.error("Error generating answer:", error);
+		console.error("❌ Error generating reply:", error);
 		return NextResponse.json(
-			{
-				error: "Failed to generate answer",
-				details:
-					error instanceof Error ? error.message : "Unknown error"
-			},
+			{ error: "An unexpected error occurred" },
 			{ status: 500 }
 		);
 	}
