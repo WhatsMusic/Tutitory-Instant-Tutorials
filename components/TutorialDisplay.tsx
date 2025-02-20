@@ -76,7 +76,7 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
 
   return (
     <div className="w-full mx-auto p-6 sm:p-2 bg-white rounded-lg shadow-sm">
-      <h1 className="text-2xl font-bold mb-4">{tutorial.title}</h1>
+      <h1 className="text-xl font-bold mb-4">{tutorial.title}</h1>
       <p className="text-lg text-gray-600 mb-8">{tutorial.description}</p>
 
       {error && (

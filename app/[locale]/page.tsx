@@ -9,11 +9,11 @@ export default function HomePage() {
 
     return (
         <div className="container min-h-[70svh] w-full mx-0 p-0 sm:mx-auto">
-            <h1 className="text-3xl font-bold my-4 text-center">{t("title")}</h1>
+            <h1 className="text-2xl font-bold mt-6 text-center">{t("title")}</h1>
 
             {/* SEO-Optimized Introduction Text */}
             <div className="md:flex md:flex-row flex-col justify-normal items-center">
-                <Image src="/logo-tutitory-2.png" width="300" height="300" alt="Image" className="w-2/3 md:w-1/6" />
+                <Image src="/logo-tutitory-2.png" width="300" height="300" alt="Image" className="w-2/3 md:w-1/6 h-auto" />
                 <div className="md:pl-4">
                     <p className="text-lg text-gray-700">{t("welcome")}</p>
                 </div>

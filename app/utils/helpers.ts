@@ -9,22 +9,21 @@ export const langMap = {
 };
 
 export function cleanJsonString(jsonString: string): string {
-	try {
-		// Finde den JSON-Block anhand der ersten und letzten geschweiften Klammer
-		const firstBraceIndex = jsonString.indexOf("{");
-		const lastBraceIndex = jsonString.lastIndexOf("}");
-		if (firstBraceIndex === -1 || lastBraceIndex === -1) {
-			throw new Error("Invalid JSON: Could not find curly braces.");
-		}
-		let cleaned = jsonString.substring(firstBraceIndex, lastBraceIndex + 1);
-
-		// Entferne überflüssige Kommata vor schließenden Klammern (sowohl für Objekte als auch für Arrays)
-		cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
-		return cleaned;
-	} catch (error) {
-		console.error("JSON cleaning error:", error);
-		throw error;
+	// Finde den JSON-Block anhand der ersten und letzten geschweiften Klammer
+	const firstBraceIndex = jsonString.indexOf("{");
+	const lastBraceIndex = jsonString.lastIndexOf("}");
+	if (firstBraceIndex === -1 || lastBraceIndex === -1) {
+		throw new Error("Invalid JSON: Could not find curly braces.");
 	}
+	let cleaned = jsonString.substring(firstBraceIndex, lastBraceIndex + 1);
+
+	// Entferne überflüssige Kommata vor schließenden Klammern (sowohl für Objekte als auch Arrays)
+	cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
+
+	// Entferne eventuell nicht erlaubte Steuerzeichen oder zusätzliche Leerzeichen
+	cleaned = cleaned.trim();
+
+	return cleaned;
 }
 
 export function parseTutorialContent(content: string): Tutorial {

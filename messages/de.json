@@ -7,7 +7,7 @@
 	},
 	"Home": {
 		"title": "Tutitory – Dein KI-gestützter Tutorial-Generator",
-		"welcome": "Willkommen bei Tutitory – der intelligenten Plattform zur Erstellung von Tutorials zu jedem erdenklichen Thema! Gib ein Stichwort oder Thema ein, und unsere leistungsstarke KI generiert in Sekundenschnelle eine Schritt-für-Schritt-Anleitung, egal ob es um Technologie, Kunst, Musik oder Wissenschaft geht. Perfekt für Anfänger, Fortgeschrittene oder Experten, die einen schnellen Einstieg suchen.",
+		"welcome": "Willkommen bei Tutitory – der intelligenten Plattform zur Erstellung von Tutorials zu jedem erdenklichen Thema!",
 		"tutorialPrompt": "Sie sind ein KI-Modell, das strukturierte Tutorials generiert. Folgen Sie dem exakten JSON-Format, das unten angegeben ist, ohne davon abzuweichen. Stellen Sie sicher, dass die Antwort strikt dieser JSON-Struktur folgt. Fügen Sie keine Markdown-Formatierung wie hinzu. - Fügen Sie keine Erklärungen oder zusätzlichen Text hinzu. - Die Antwort muss gültiges JSON sein und genau 5 Kapitel enthalten. - Stellen Sie sicher, dass **alle JSON-Elemente vollständig geschlossen und gültig sind**. Generieren Sie nun ein Tutorial für das Thema: ${topic} in ${locale}.",
 		"content": {
 			"whatIsTutitoryTitle": "Was ist Tutitory?",

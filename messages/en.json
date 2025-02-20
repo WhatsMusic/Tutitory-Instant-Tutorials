@@ -7,7 +7,7 @@
 	},
 	"Home": {
 		"title": "Tutitory – Your AI-Powered Tutorial Generator",
-		"welcome": "Welcome to Tutitory – the smart platform for creating tutorials on any topic you can think of! Enter a keyword or topic, and our powerful AI will generate step-by-step instructions in seconds, whether it's about technology, art, music, or science. Perfect for beginners, advanced learners, or experts looking for a quick reference.",
+		"welcome": "Welcome to Tutitory – the smart platform for creating tutorials on any topic you can think of!",
 		"content": {
 			"whatIsTutitoryTitle": "What is Tutitory?",
 			"whatIsTutitory": "Tutitory is your new assistant for creating and sharing knowledge quickly and efficiently. Our platform uses the latest advances in artificial intelligence to provide you with tutorials and instructions in clear, understandable language.",
