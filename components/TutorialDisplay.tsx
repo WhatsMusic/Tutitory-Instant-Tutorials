@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import type { Tutorial, Chapter } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
@@ -13,62 +14,88 @@ export default function TutorialDisplay({ tutorial }: { tutorial: Tutorial }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChapterSelect = async (chapter: Chapter) => {
-    if (!chapter.content) {
-      setIsLoading(true);
-      setError(null);
+    const localKey = `chapter:${tutorial.title}:${chapter.title}`
+      .replace(/\s+/g, "_")
+      .toLowerCase();
+
+    // 2) Prüfen, ob im localStorage schon Content vorliegt
+    const cachedContent = typeof window !== "undefined"
+      ? localStorage.getItem(localKey)
+      : null;
+
+    // 2a) Falls ja, direkt setzen und Request überspringen
+    if (cachedContent) {
+      chapter.content = cachedContent;
+      setSelectedChapter({ ...chapter });
+      return;
+    }
+
+    // 3) Wenn kein Cache vorhanden, wie gehabt fetch/stream
+    //    Hier dein existierender Code:
+    setIsLoading(true);
+    setError(null);
 
 
-      try {
-        const res = await fetch(`/api/generate-chapter?locale=${locale}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            tutorialTitle: tutorial.title,
-            chapterTitle: chapter.title,
-            chapterDescription: chapter.description || t("noDescription")
-          })
-        });
+    try {
+      const res = await fetch(`/api/generate-chapter?locale=${locale}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tutorialTitle: tutorial.title,
+          chapterTitle: chapter.title,
+          chapterDescription: chapter.description || t("noDescription"),
+        }),
+      });
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || t("failedToGenerateChapter"));
-        }
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || t("failedToGenerateChapter"));
+      }
 
-        // Streamed response
-        const reader = res.body?.getReader();
-        const decoder = new TextDecoder();
-        let streamedText = "";
+      // Streamed response
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let streamedText = "";
 
-        if (reader) {
-          let firstChunkReceived = false;
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
+      if (reader) {
+        let firstChunkReceived = false;
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
 
-            streamedText += decoder.decode(value, { stream: true });
+          streamedText += decoder.decode(value, { stream: true });
 
-            if (!firstChunkReceived) {
-              setIsLoading(false);
-              firstChunkReceived = true;
-            }
-
-            chapter.content = streamedText;
-            setSelectedChapter({ ...chapter });
+          if (!firstChunkReceived) {
+            setIsLoading(false);
+            firstChunkReceived = true;
           }
-        }
 
-        setError(null);
-      } catch (error) {
-        console.error("Error generating chapter:", error);
-        setError(
-          error instanceof Error ? error.message : t("unexpectedError")
-        );
-      } finally {
-        if (!chapter.content) setIsLoading(false);
+          chapter.content = streamedText;
+          setSelectedChapter({ ...chapter });
+        }
+      }
+
+      // 4) Nachdem der Stream vollständig empfangen wurde:
+      //    im localStorage ablegen
+      if (streamedText) {
+        localStorage.setItem(localKey, streamedText);
+      }
+
+      setError(null);
+    } catch (error) {
+      console.error("Error generating chapter:", error);
+      setError(error instanceof Error ? error.message : t("unexpectedError"));
+    } finally {
+      // Falls das Kapitel sehr kurz ist, kann der Stream in Nullzeit kommen
+      // => Double-check, das isLoading nur abgeschaltet wird, wenn noch nicht geschehen
+      if (!chapter.content) {
+        setIsLoading(false);
       }
     }
+
+    // Schlussendlich das Kapitel als "selected" setzen
     setSelectedChapter(chapter);
-  };
+  }
 
   const currentIndex = selectedChapter
     ? tutorial.chapters.findIndex((c) => c.title === selectedChapter.title)

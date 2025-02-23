@@ -1,20 +1,16 @@
-// app/components/TutorialForm.tsx
 "use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import TutorialDisplay from "./TutorialDisplay";
 import { Chapter } from "@/types";
-import { useLocale } from 'next-intl';
-
+import { useLocale } from "next-intl";
 
 interface Tutorial {
   title: string;
   description: string;
   chapters: Chapter[];
-  // Add other properties as needed
 }
-
 
 export default function TutorialForm() {
   const t = useTranslations("TutorialForm");
@@ -25,11 +21,26 @@ export default function TutorialForm() {
   const [error, setError] = useState<string | null>(null);
   const [tutorial, setTutorial] = useState<Tutorial | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // 1) Lokalen Cache-Key bestimmen:
+    const localKey = `tutorial:${topic}`.replace(/\s+/g, "_").toLowerCase();
+
+    // 2) Check, ob bereits etwas im Local Storage liegt:
+    const cachedTutorial = typeof window !== "undefined"
+      ? localStorage.getItem(localKey)
+      : null;
+
+    if (cachedTutorial) {
+      // Direkt aus dem Cache laden und rendern
+      setTutorial(JSON.parse(cachedTutorial));
+      return;
+    }
+
+    // Falls noch nichts im Cache, API-Fetch durchführen
     setLoading(true);
     setError(null);
-
 
     try {
       const res = await fetch(`/api/generate-toc?locale=${locale}`, {
@@ -50,18 +61,21 @@ export default function TutorialForm() {
         throw new Error(data.error || t("failedGenerateTOC"));
       }
 
-      // Hier wird angenommen, dass die API alle benötigten Felder liefert.
-      if (!data.title || !data.description || !data.chapters || data.chapters.length === 0) {
+      // 3) Daten validieren & lokal speichern
+      if (!data.title || !data.description || !data.chapters?.length) {
         throw new Error(t("invalidTutorialData"));
       }
+
+      // Tutorial setzen & in Local Storage ablegen
       setTutorial(data);
-    } catch (error) {
-      console.error("Error generating table of contents:", error);
-      setError(error instanceof Error ? error.message : t("unexpectedError"));
+      localStorage.setItem(localKey, JSON.stringify(data));
+    } catch (err) {
+      console.error("Error generating table of contents:", err);
+      setError(err instanceof Error ? err.message : t("unexpectedError"));
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <form id="topicForm" onSubmit={handleSubmit} className="space-y-4">
@@ -81,6 +95,7 @@ export default function TutorialForm() {
       >
         {loading ? t("generating") : t("btnGenerateTutorial")}
       </button>
+
       {error && <p className="text-red-500">{error}</p>}
       {tutorial && <TutorialDisplay tutorial={tutorial} />}
     </form>

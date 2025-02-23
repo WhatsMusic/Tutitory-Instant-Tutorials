@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { HfInference } from "@huggingface/inference";
+import OpenAIApi from "openai";
 
-// Initialisiere den Hugging Face Client
-const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
+const openaiConfig = {
+	apiKey: process.env.OPENAI_API_KEY,
+	fetch: (...args: Parameters<typeof globalThis.fetch>) => fetch(...args)
+};
+
+const openai = new OpenAIApi(openaiConfig);
 
 // Definiere die Prompts für beide Sprachen
 const prompts: {
@@ -43,19 +47,18 @@ export async function POST(req: NextRequest) {
 
 		// Sammle den generierten Text aus dem Streaming-Response
 		let accumulatedText = "";
-		const responseStream = client.chatCompletionStream({
-			model: "mistralai/Mistral-7B-Instruct-v0.3", // Modell, das Chat-Streaming unterstützt
+		const responseStream = await openai.chat.completions.create({
+			model: "gpt-3.5-turbo",
 			messages: [
 				{
 					role: "user",
 					content: prompt
 				}
 			],
-			provider: "together",
-			max_new_tokens: 2048,
-			temperature: 0.3,
-			top_p: 0.95,
-			top_k: 50
+			stream: true,
+			max_tokens: 2048,
+			temperature: 0.7,
+			top_p: 0.95
 		});
 
 		for await (const chunk of responseStream) {

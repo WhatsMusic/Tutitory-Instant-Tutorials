@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { HfInference } from "@huggingface/inference";
+import OpenAIApi from "openai";
 import { cleanJsonString, parseTutorialContent } from "@/app/utils/helpers";
 
-const client = new HfInference(process.env.HUGGINGFACE_API_KEY);
+const openaiConfig = {
+	apiKey: process.env.OPENAI_API_KEY,
+	fetch: (...args: Parameters<typeof globalThis.fetch>) => fetch(...args)
+};
+
+const openai = new OpenAIApi(openaiConfig);
 
 async function fetchFeaturedImage(query: string): Promise<string | null> {
 	const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(
@@ -122,22 +127,20 @@ export async function POST(req: NextRequest) {
 			{ prompt }
 		);
 
-		const chatCompletion = await client.chatCompletion({
-			model: "google/gemma-2-2b-it",
+		const chatCompletion = await openai.chat.completions.create({
+			model: "gpt-3.5-turbo",
 			messages: [
 				{
 					role: "user",
-					content: JSON.stringify({ prompt })
+					content: prompt
 				}
 			],
-			provider: "hf-inference",
-			max_new_tokens: 500,
+			max_tokens: 500,
 			temperature: 0.7,
-			top_p: 0.95,
-			top_k: 50
+			top_p: 0.95
 		});
 
-		const generatedContent = chatCompletion.choices[0]?.message?.content;
+		const generatedContent = chatCompletion.choices[0]?.message.content;
 
 		if (!generatedContent) {
 			return NextResponse.json(

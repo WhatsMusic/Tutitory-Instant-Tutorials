@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import type { ChapterContentProps } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
@@ -7,15 +6,8 @@ import MarkdownRenderer from "./MarkdownRenderer";
 import ChapterNavigation from "./ChapterNavigation";
 import Image from "next/image";
 
-export default function ChapterContent({
-    chapter,
-    onBack,
-    onNext,
-    onPrevious,
-    hasNext,
-    hasPrevious,
-    onRetry
-}: ChapterContentProps) {
+export default function ChapterContent(props: ChapterContentProps) {
+    const { chapter, onBack, onNext, onPrevious, hasNext, hasPrevious, onRetry } = props;
     const t = useTranslations("ChapterContent");
     const locale = useLocale();
 
@@ -24,20 +16,35 @@ export default function ChapterContent({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Track live streamed content updates
-    const [displayedContent, setDisplayedContent] = useState(
-        chapter.content || t("loadingContent")
-    );
-
+    // Displayed content ...
+    const [displayedContent, setDisplayedContent] = useState(chapter.content || t("loadingContent"));
     useEffect(() => {
         setDisplayedContent(chapter.content || t("loadingContent"));
     }, [chapter.content]);
 
-    const handleAskQuestion = async () => {
+    async function handleAskQuestion() {
         if (!question.trim()) return;
-
         setIsLoading(true);
         setError(null);
+
+        // 1) Eindeutigen Key generieren (Tutorial-Title + Chapter-Titel + Frage)
+        const localKey = `qna:${chapter.tutorialTitle}:${chapter.title}:${question}`
+            .replace(/\s+/g, "_")
+            .toLowerCase();
+
+        // 2) Im Local Storage nachsehen
+        const cachedAnswer = typeof window !== "undefined"
+            ? localStorage.getItem(localKey)
+            : null;
+
+        if (cachedAnswer) {
+            // Aus dem Cache
+            setAnswer(cachedAnswer);
+            setIsLoading(false);
+            return;
+        }
+
+        // 3) Falls nicht im Cache, fetchen
         try {
             const res = await fetch(`/api/ask-question?locale=${locale}`, {
                 method: "POST",
@@ -54,17 +61,18 @@ export default function ChapterContent({
                 throw new Error(errorData.error || t("failedToGetAnswer"));
             }
 
-            const { answer } = await res.json();
-            setAnswer(answer);
-        } catch (error) {
-            console.error("Error getting answer:", error);
-            setError(
-                error instanceof Error ? error.message : t("unexpectedError")
-            );
+            const { answer: fetchedAnswer } = await res.json();
+            setAnswer(fetchedAnswer);
+
+            // 4) Nach erfolgreichem Erhalt im Local Storage speichern
+            localStorage.setItem(localKey, fetchedAnswer);
+        } catch (err) {
+            console.error("Error getting answer:", err);
+            setError(err instanceof Error ? err.message : t("unexpectedError"));
         } finally {
             setIsLoading(false);
         }
-    };
+    }
 
     return (
         <>
@@ -92,7 +100,6 @@ export default function ChapterContent({
                     </div>
                 ) : (
                     <>
-                        {/* Optional: Anzeige des Featured Image */}
                         {chapter.featuredImage && (
                             <div className="mt-8 md:float-left md:w-1/3 md:mr-6 lg:w-1/4">
                                 <Image
@@ -122,6 +129,7 @@ export default function ChapterContent({
                             onRetry={onRetry}
                         />
 
+                        {/* Frage/Antwort-Bereich */}
                         <div className="mt-12 p-6 sm:p-2 bg-gray-50 rounded-lg">
                             <h3 className="text-xl font-semibold mb-4">
                                 {t("questionsAboutChapter")}
