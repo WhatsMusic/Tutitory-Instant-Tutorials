@@ -99,7 +99,10 @@ export default async function LocaleLayout({
             <body>
                 <NextIntlClientProvider messages={allMessages}>
                     <Header />
-                    {children}
+                    <div className="container mx-auto px-4 py-8">
+                        {children}
+                    </div>
+                    {/* Footer */}
                     <Footer />
                 </NextIntlClientProvider>
                 <Analytics />

@@ -9,7 +9,7 @@ export default function HomePage() {
     return (
         <>
             <div className="container min-h-[calc(100vh)] p-0 sm:mx-auto">
-                <h1 className="text-2xl font-bold mt-6 pt-12 pb-4 text-center">{t("title")}</h1>
+                <h1 className="text-2xl font-bold pb-4 text-center">{t("title")}</h1>
 
                 {/* SEO-Optimized Introduction Text */}
 

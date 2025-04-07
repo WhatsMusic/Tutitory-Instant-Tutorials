@@ -90,7 +90,7 @@ export default function TutorialForm() {
       />
       <button
         type="submit"
-        className="w-full bg-[#106e56] text-white p-2 rounded"
+        className="w-full bg-[#6E6910] text-white p-2 rounded"
         disabled={loading}
       >
         {loading ? t("generating") : t("btnGenerateTutorial")}

@@ -8,12 +8,12 @@ const Footer = () => {
     const locale = useLocale();
 
     return (
-        <footer className="bg-[#106e56] text-white p-4">
+        <footer className="bg-[#D1D3D8] text-black py-4 mt-8 bottom-0 relative mb-0 pb-0">
             <div className="container mx-auto text-center">
                 {/* Example string: "© 2025 Tutitory, All rights reserved." */}
                 {t("copyright")}
                 <div className="mt-2">
-                    <Link href={`/${locale}/imprint`} className="text-white hover:text-white underline">
+                    <Link href={`/${locale}/imprint`} className="text-[#106e56] underline">
                         {t("imprint")}
                     </Link>
                 </div>
