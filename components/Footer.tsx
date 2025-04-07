@@ -8,7 +8,7 @@ const Footer = () => {
     const locale = useLocale();
 
     return (
-        <footer className="bg-[#106e56] text-white p-4 mt-6">
+        <footer className="bg-[#106e56] text-white p-4">
             <div className="container mx-auto text-center">
                 {/* Example string: "© 2025 Tutitory, All rights reserved." */}
                 {t("copyright")}
